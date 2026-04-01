@@ -1,9 +1,10 @@
 using SalusMedApi.Domain.Enums;
 using SalusMedApi.Domain.ValueObjects;
+using SalusMedApi.Infrastructure.Repositories.Interfaces;
 
 namespace SalusMedApi.Domain.Entities;
 
-public class Patient
+public class Patient : IAuditable
 {
     public long Id { get; set; }
     public string Name { get; set; }

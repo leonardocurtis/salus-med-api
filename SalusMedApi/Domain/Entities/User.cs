@@ -1,8 +1,9 @@
 using SalusMedApi.Domain.Enums;
+using SalusMedApi.Infrastructure.Repositories.Interfaces;
 
 namespace SalusMedApi.Domain.Entities;
 
-public class User
+public class User : IAuditable
 {
     public long Id { get; set; }
     public string Email { get; set; }
