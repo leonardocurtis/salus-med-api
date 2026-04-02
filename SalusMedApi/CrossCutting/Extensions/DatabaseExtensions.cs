@@ -1,0 +1,25 @@
+using Microsoft.EntityFrameworkCore;
+using SalusMedApi.Infrastructure.Persistence;
+
+namespace SalusMedApi.CrossCutting.Extensions;
+
+public static class DatabaseExtensions
+{
+    public static IServiceCollection AddDatabase(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
+    {
+        var connectionString =
+            configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException(
+                "Connection string 'DefaultConnection' not found"
+            );
+
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention()
+        );
+
+        return services;
+    }
+}
