@@ -10,6 +10,7 @@ public class Physician : IAuditable
     public string Name { get; set; }
     public string Phone { get; set; }
     public string MedicalRegistration { get; set; }
+    public string Cpf { get; set; }
     public Gender Gender { get; set; }
     public DateOnly DateOfBirth { get; set; }
     public Specialty Specialty { get; set; }

@@ -13,6 +13,7 @@ public class PhysicianMappings : IEntityTypeConfiguration<Physician>
         builder.Property(p => p.Name).HasMaxLength(100).IsRequired();
         builder.Property(p => p.Phone).HasMaxLength(20).IsRequired();
         builder.Property(p => p.MedicalRegistration).HasMaxLength(6).IsRequired();
+        builder.Property(p => p.Cpf).HasMaxLength(11).IsRequired();
         builder.Property(p => p.Gender).HasConversion<string>().HasMaxLength(50).IsRequired();
         builder.Property(p => p.DateOfBirth).IsRequired();
         builder.Property(p => p.Specialty).HasConversion<string>().HasMaxLength(100).IsRequired();
@@ -21,6 +22,7 @@ public class PhysicianMappings : IEntityTypeConfiguration<Physician>
 
         builder.HasIndex(p => p.Phone).IsUnique();
         builder.HasIndex(p => p.MedicalRegistration).IsUnique();
+        builder.HasIndex(p => p.Cpf).IsUnique();
 
         builder.ConfigureAddress(p => p.Address);
 
