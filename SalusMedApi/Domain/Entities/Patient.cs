@@ -17,6 +17,6 @@ public class Patient : IAuditable
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? UpdatedAt { get; set; }
 
-    public string UserId { get; set; }
+    public long UserId { get; set; }
     public User User { get; set; }
 }
