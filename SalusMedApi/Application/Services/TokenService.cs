@@ -4,12 +4,13 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SalusMedApi.Application.DTOs.Auth;
+using SalusMedApi.Application.Services.Interfaces;
 using SalusMedApi.CrossCutting.Configuration;
 using SalusMedApi.Domain.Entities;
 
 namespace SalusMedApi.Application.Services;
 
-public class TokenService
+public class TokenService : ITokenService
 {
     private readonly JwtSettings _jwtSettings;
 
@@ -26,9 +27,10 @@ public class TokenService
 
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role.ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim("role", user.Role.ToString()),
         };
 
         var token = new JwtSecurityToken(

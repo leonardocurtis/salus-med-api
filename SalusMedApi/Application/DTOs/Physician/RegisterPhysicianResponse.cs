@@ -8,6 +8,7 @@ public record RegisterPhysicianResponse(
     string Name,
     string Phone,
     string MedicalRegistration,
+    string Cpf,
     Gender Gender,
     DateOnly DateOfBirth,
     Specialty Specialty,
