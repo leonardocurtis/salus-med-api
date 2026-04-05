@@ -8,4 +8,4 @@ public record AddressRequest(
     string PostalCode,
     string City,
     string State
-) { }
+);

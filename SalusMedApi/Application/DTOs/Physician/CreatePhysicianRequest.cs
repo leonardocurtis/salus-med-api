@@ -12,4 +12,4 @@ public record CreatePhysicianRequest(
     DateOnly DateOfBirth,
     Specialty Specialty,
     AddressRequest Address
-) { }
+);

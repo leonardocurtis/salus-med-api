@@ -15,4 +15,4 @@ public record RegisterPhysicianResponse(
     AddressResponse Address,
     PhysicianStatus Status,
     DateTimeOffset CreatedAt
-) { }
+);
