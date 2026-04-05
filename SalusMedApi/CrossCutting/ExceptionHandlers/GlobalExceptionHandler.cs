@@ -42,7 +42,7 @@ public class GlobalExceptionHandler : IExceptionHandler
             Status = statusCode,
             Title = GetTitle(statusCode),
             Detail = exception.Message,
-            Type = $"salusmed-Api/errors/{type}",
+            Type = $"salusmed-api/errors/{type}",
             Instance = context.Request.Path,
             Extensions = { ["timestamp"] = DateTime.UtcNow },
         };

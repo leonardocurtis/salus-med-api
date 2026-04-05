@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.OpenApi;
 using SalusMedApi.CrossCutting.ExceptionHandlers;
 using SalusMedApi.CrossCutting.Extensions;
@@ -11,6 +13,9 @@ builder
     .AddAuthorization()
     .AddApplication() // Services
     .AddInfrastructure() // Repositories
+    .AddValidatorsFromAssemblyContaining<Program>() // FluentValidation
+    .AddFluentValidationAutoValidation() // FluentValidation
+    .AddExceptionHandler<ValidationExceptionHandler>() // Exception
     .AddExceptionHandler<GlobalExceptionHandler>() // Exception handlers
     .AddProblemDetails() // ProblemDetails
     .AddSwaggerGen(opt =>
