@@ -1,5 +1,6 @@
 using SalusMedApi.Application.DTOs.Address;
 using SalusMedApi.Application.DTOs.Auth;
+using SalusMedApi.Application.DTOs.Patient;
 using SalusMedApi.Application.DTOs.Physician;
 using SalusMedApi.Application.Services.Interfaces;
 using SalusMedApi.CrossCutting.Exceptions;
@@ -15,16 +16,19 @@ public class AuthService : IAuthService
     private readonly IUserRepository _userRepository;
     private readonly ITokenService _tokenService;
     private readonly IPhysicianRepository _physicianRepository;
+    private readonly IPatientRepository _patientRepository;
 
     public AuthService(
         ITokenService tokenService,
         IUserRepository userRepository,
-        IPhysicianRepository physicianRepository
+        IPhysicianRepository physicianRepository,
+        IPatientRepository patientRepository
     )
     {
         _tokenService = tokenService;
         _userRepository = userRepository;
         _physicianRepository = physicianRepository;
+        _patientRepository = patientRepository;
     }
 
     public async Task<RegisterPhysicianResponse> RegisterPhysicianAsync(
@@ -91,6 +95,68 @@ public class AuthService : IAuthService
             ),
             physician.Status,
             physician.CreatedAt
+        );
+    }
+
+    public async Task<RegisterPatientResponse> RegisterPatientAsync(
+        RegisterPatientRequest patientRequest
+    )
+    {
+        if (await _userRepository.EmailExistAsync(patientRequest.Credentials.Email))
+            throw new ConflictException(
+                $"Email {patientRequest.Credentials.Email} already in use."
+            );
+
+        if (await _patientRepository.CpfExistsAsync(patientRequest.Patient.Cpf))
+            throw new ConflictException($"Cpf {patientRequest.Patient.Cpf} already in use.");
+
+        var patient = new Patient
+        {
+            Name = patientRequest.Patient.Name,
+            Phone = patientRequest.Patient.Phone,
+            Cpf = patientRequest.Patient.Cpf,
+            Gender = patientRequest.Patient.Gender!.Value,
+            DateOfBirth = patientRequest.Patient.DateOfBirth!.Value,
+            Address = new Address
+            {
+                Street = patientRequest.Patient.Address.Street,
+                Number = patientRequest.Patient.Address.Number,
+                Neighborhood = patientRequest.Patient.Address.Neighborhood,
+                PostalCode = patientRequest.Patient.Address.PostalCode,
+                Complement = patientRequest.Patient.Address.Complement,
+                City = patientRequest.Patient.Address.City,
+                State = patientRequest.Patient.Address.State,
+            },
+            Status = PatientStatus.Active,
+            User = new User
+            {
+                Email = patientRequest.Credentials.Email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(patientRequest.Credentials.Password),
+                Role = Role.Patient,
+                Status = AccountStatus.Active,
+            },
+        };
+
+        await _patientRepository.SaveAsync(patient);
+
+        return new RegisterPatientResponse(
+            patient.Id,
+            patient.Name,
+            patient.Phone,
+            patient.Cpf,
+            patient.Gender,
+            patient.DateOfBirth,
+            new AddressResponse(
+                patient.Address.Street,
+                patient.Address.Number,
+                patient.Address.Complement,
+                patient.Address.Neighborhood,
+                patient.Address.PostalCode,
+                patient.Address.City,
+                patient.Address.State
+            ),
+            patient.Status,
+            patient.CreatedAt
         );
     }
 

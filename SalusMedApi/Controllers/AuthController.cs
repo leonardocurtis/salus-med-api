@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using SalusMedApi.Application.DTOs.Auth;
+using SalusMedApi.Application.DTOs.Patient;
 using SalusMedApi.Application.DTOs.Physician;
 using SalusMedApi.Application.Services.Interfaces;
 using LoginRequest = SalusMedApi.Application.DTOs.Auth.LoginRequest;
@@ -9,7 +10,7 @@ using LoginRequest = SalusMedApi.Application.DTOs.Auth.LoginRequest;
 namespace SalusMedApi.Controllers;
 
 [ApiController]
-[Route("api/auth")]
+[Route("api/v1/[controller]")]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
@@ -35,5 +36,15 @@ public class AuthController : ControllerBase
     {
         var physician = await _authService.RegisterPhysicianAsync(dto);
         return StatusCode(StatusCodes.Status201Created, physician);
+    }
+
+    [HttpPost("register/patient")]
+    [AllowAnonymous]
+    public async Task<ActionResult<RegisterPatientResponse>> RegisterPatient(
+        [FromBody] RegisterPatientRequest dto
+    )
+    {
+        var patient = await _authService.RegisterPatientAsync(dto);
+        return StatusCode(StatusCodes.Status201Created, patient);
     }
 }
