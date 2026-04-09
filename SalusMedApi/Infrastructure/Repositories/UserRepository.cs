@@ -19,11 +19,4 @@ public class UserRepository : IUserRepository
 
     public async Task<bool> EmailExistAsync(string email) =>
         await _context.Users.AnyAsync(x => x.Email == email);
-
-    public async Task<User> SaveAsync(User user)
-    {
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-        return user;
-    }
 }
