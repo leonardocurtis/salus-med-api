@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SalusMedApi.Infrastructure.Persistence;
@@ -12,9 +13,11 @@ using SalusMedApi.Infrastructure.Persistence;
 namespace SalusMedApi.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260408184926_CreateEmployeeAndUpdatePhysicianRelationship")]
+    partial class CreateEmployeeAndUpdatePhysicianRelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,6 +90,7 @@ namespace SalusMedApi.Infrastructure.Persistence.Migrations
                                 .HasColumnName("city");
 
                             b1.Property<string>("Complement")
+                                .IsRequired()
                                 .HasMaxLength(100)
                                 .HasColumnType("character varying(100)")
                                 .HasColumnName("complement");
@@ -163,22 +167,11 @@ namespace SalusMedApi.Infrastructure.Persistence.Migrations
                         .HasColumnType("date")
                         .HasColumnName("date_of_birth");
 
-                    b.Property<string>("FatherName")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("father_name");
-
                     b.Property<string>("Gender")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("gender");
-
-                    b.Property<string>("MotherName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("mother_name");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -217,6 +210,7 @@ namespace SalusMedApi.Infrastructure.Persistence.Migrations
                                 .HasColumnName("city");
 
                             b1.Property<string>("Complement")
+                                .IsRequired()
                                 .HasMaxLength(100)
                                 .HasColumnType("character varying(100)")
                                 .HasColumnName("complement");
