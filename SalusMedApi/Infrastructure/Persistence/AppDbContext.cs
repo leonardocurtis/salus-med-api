@@ -13,6 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<Physician> Physicians { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Patient> Patients { get; set; }
+    public DbSet<Employee> Employees { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

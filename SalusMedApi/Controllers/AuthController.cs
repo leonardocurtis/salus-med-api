@@ -29,7 +29,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register/physician")]
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<RegisterPhysicianResponse>> RegisterPhysician(
         [FromBody] RegisterPhysicianRequest dto
     )

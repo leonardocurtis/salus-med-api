@@ -10,26 +10,16 @@ public class PhysicianMappings : IEntityTypeConfiguration<Physician>
     {
         builder.ToTable("physicians");
 
-        builder.Property(p => p.Name).HasMaxLength(100).IsRequired();
-        builder.Property(p => p.Phone).HasMaxLength(20).IsRequired();
         builder.Property(p => p.MedicalRegistration).HasMaxLength(6).IsRequired();
-        builder.Property(p => p.Cpf).HasMaxLength(11).IsRequired();
-        builder.Property(p => p.Gender).HasConversion<string>().HasMaxLength(50).IsRequired();
-        builder.Property(p => p.DateOfBirth).IsRequired();
         builder.Property(p => p.Specialty).HasConversion<string>().HasMaxLength(100).IsRequired();
-        builder.Property(p => p.Status).HasConversion<string>().HasMaxLength(50).IsRequired();
         builder.Property(p => p.CreatedAt).IsRequired();
 
-        builder.HasIndex(p => p.Phone).IsUnique();
         builder.HasIndex(p => p.MedicalRegistration).IsUnique();
-        builder.HasIndex(p => p.Cpf).IsUnique();
-
-        builder.ConfigureAddress(p => p.Address);
 
         builder
-            .HasOne(p => p.User)
+            .HasOne(p => p.Employee)
             .WithOne()
-            .HasForeignKey<Physician>(p => p.UserId)
+            .HasForeignKey<Physician>(p => p.EmployeeId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

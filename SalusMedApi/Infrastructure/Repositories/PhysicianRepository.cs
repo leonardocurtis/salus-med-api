@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using SalusMedApi.Domain.Entities;
 using SalusMedApi.Infrastructure.Persistence;
 using SalusMedApi.Infrastructure.Repositories.Interfaces;
@@ -19,4 +20,7 @@ public class PhysicianRepository : IPhysicianRepository
         await _context.SaveChangesAsync();
         return physician;
     }
+
+    public async Task<bool> MedicalRegistrationExistsAsync(string medicalRegistration) =>
+        await _context.Physicians.AnyAsync(p => p.MedicalRegistration == medicalRegistration);
 }

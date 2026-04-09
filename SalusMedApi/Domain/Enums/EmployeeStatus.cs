@@ -1,8 +1,8 @@
 namespace SalusMedApi.Domain.Enums;
 
-public enum PhysicianStatus
+public enum EmployeeStatus
 {
     Active,
-    Deactivated,
     OnLeave,
+    Terminated,
 }

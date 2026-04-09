@@ -5,4 +5,6 @@ public enum Role
     Patient,
     Physician,
     Admin,
+    Receptionist,
+    Coordinator,
 }

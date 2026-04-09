@@ -16,6 +16,7 @@ public static class DependencyInjectionExtensions
 
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
+        services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IPatientRepository, PatientRepository>();
         services.AddScoped<IPhysicianRepository, PhysicianRepository>();
         services.AddScoped<IUserRepository, UserRepository>();

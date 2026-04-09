@@ -17,18 +17,21 @@ public class AuthService : IAuthService
     private readonly ITokenService _tokenService;
     private readonly IPhysicianRepository _physicianRepository;
     private readonly IPatientRepository _patientRepository;
+    private readonly IEmployeeRepository _employeeRepository;
 
     public AuthService(
         ITokenService tokenService,
         IUserRepository userRepository,
         IPhysicianRepository physicianRepository,
-        IPatientRepository patientRepository
+        IPatientRepository patientRepository,
+        IEmployeeRepository employeeRepository
     )
     {
         _tokenService = tokenService;
         _userRepository = userRepository;
         _physicianRepository = physicianRepository;
         _patientRepository = patientRepository;
+        _employeeRepository = employeeRepository;
     }
 
     public async Task<RegisterPhysicianResponse> RegisterPhysicianAsync(
@@ -36,40 +39,57 @@ public class AuthService : IAuthService
     )
     {
         if (await _userRepository.EmailExistAsync(physicianRequest.Credentials.Email))
-        {
             throw new ConflictException(
                 $"Email {physicianRequest.Credentials.Email} already in use."
             );
-        }
+
+        if (await _employeeRepository.CpfExistsAsync(physicianRequest.Physician.Cpf))
+            throw new ConflictException($"Cpf {physicianRequest.Physician.Cpf} already in use.");
+
+        if (
+            await _physicianRepository.MedicalRegistrationExistsAsync(
+                physicianRequest.Physician.MedicalRegistration
+            )
+        )
+            throw new ConflictException(
+                $"Medical registration number {physicianRequest.Physician.MedicalRegistration} is already associated with an account."
+            );
 
         var physician = new Physician
         {
-            Name = physicianRequest.Physician.Name,
-            Phone = physicianRequest.Physician.Phone,
-            MedicalRegistration = physicianRequest.Physician.MedicalRegistration,
-            Cpf = physicianRequest.Physician.Cpf,
-            Gender = physicianRequest.Physician.Gender,
-            DateOfBirth = physicianRequest.Physician.DateOfBirth,
-            Specialty = physicianRequest.Physician.Specialty,
-            Address = new Address
+            MedicalRegistration = physicianRequest.Physician.MedicalRegistration.Trim(),
+            Specialty = physicianRequest.Physician.Specialty!.Value,
+            Employee = new Employee
             {
-                Street = physicianRequest.Physician.Address.Street,
-                Number = physicianRequest.Physician.Address.Number,
-                Neighborhood = physicianRequest.Physician.Address.Neighborhood,
-                PostalCode = physicianRequest.Physician.Address.PostalCode,
-                Complement = physicianRequest.Physician.Address.Complement,
-                City = physicianRequest.Physician.Address.City,
-                State = physicianRequest.Physician.Address.State,
-            },
-            Status = PhysicianStatus.Active,
-            User = new User
-            {
-                Email = physicianRequest.Credentials.Email,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(
-                    physicianRequest.Credentials.Password
-                ),
-                Role = Role.Physician,
-                Status = AccountStatus.Active,
+                Name = physicianRequest.Physician.Name.Trim(),
+                Phone = physicianRequest.Physician.Phone,
+                Cpf = physicianRequest.Physician.Cpf.Trim(),
+                Gender = physicianRequest.Physician.Gender!.Value,
+                DateOfBirth = physicianRequest.Physician.DateOfBirth!.Value,
+                Status = EmployeeStatus.Active,
+                Address = new Address
+                {
+                    Street = physicianRequest.Physician.Address.Street.Trim(),
+                    Number = physicianRequest.Physician.Address.Number.Trim(),
+                    Neighborhood = physicianRequest.Physician.Address.Neighborhood.Trim(),
+                    PostalCode = physicianRequest.Physician.Address.PostalCode.Trim(),
+                    Complement = string.IsNullOrWhiteSpace(
+                        physicianRequest.Physician.Address.Complement
+                    )
+                        ? null
+                        : physicianRequest.Physician.Address.Complement.Trim(),
+                    City = physicianRequest.Physician.Address.City.Trim(),
+                    State = physicianRequest.Physician.Address.State.Trim(),
+                },
+                User = new User
+                {
+                    Email = physicianRequest.Credentials.Email.ToLower().Trim(),
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(
+                        physicianRequest.Credentials.Password
+                    ),
+                    Role = Role.Physician,
+                    Status = AccountStatus.Active,
+                },
             },
         };
 
@@ -77,23 +97,23 @@ public class AuthService : IAuthService
 
         return new RegisterPhysicianResponse(
             physician.Id,
-            physician.Name,
-            physician.Phone,
+            physician.Employee.Name,
+            physician.Employee.Phone,
             physician.MedicalRegistration,
-            physician.Cpf,
-            physician.Gender,
-            physician.DateOfBirth,
+            physician.Employee.Cpf,
+            physician.Employee.Gender,
+            physician.Employee.DateOfBirth,
             physician.Specialty,
             new AddressResponse(
-                physician.Address.Street,
-                physician.Address.Number,
-                physician.Address.Complement,
-                physician.Address.Neighborhood,
-                physician.Address.PostalCode,
-                physician.Address.City,
-                physician.Address.State
+                physician.Employee.Address.Street,
+                physician.Employee.Address.Number,
+                physician.Employee.Address.Complement,
+                physician.Employee.Address.Neighborhood,
+                physician.Employee.Address.PostalCode,
+                physician.Employee.Address.City,
+                physician.Employee.Address.State
             ),
-            physician.Status,
+            physician.Employee.Status,
             physician.CreatedAt
         );
     }
@@ -112,25 +132,31 @@ public class AuthService : IAuthService
 
         var patient = new Patient
         {
-            Name = patientRequest.Patient.Name,
-            Phone = patientRequest.Patient.Phone,
-            Cpf = patientRequest.Patient.Cpf,
+            Name = patientRequest.Patient.Name.Trim(),
+            MotherName = patientRequest.Patient.MotherName.Trim(),
+            FatherName = string.IsNullOrWhiteSpace(patientRequest.Patient.FatherName)
+                ? null
+                : patientRequest.Patient.FatherName.Trim(),
+            Phone = patientRequest.Patient.Phone.Trim(),
+            Cpf = patientRequest.Patient.Cpf.Trim(),
             Gender = patientRequest.Patient.Gender!.Value,
             DateOfBirth = patientRequest.Patient.DateOfBirth!.Value,
             Address = new Address
             {
-                Street = patientRequest.Patient.Address.Street,
-                Number = patientRequest.Patient.Address.Number,
-                Neighborhood = patientRequest.Patient.Address.Neighborhood,
-                PostalCode = patientRequest.Patient.Address.PostalCode,
-                Complement = patientRequest.Patient.Address.Complement,
-                City = patientRequest.Patient.Address.City,
-                State = patientRequest.Patient.Address.State,
+                Street = patientRequest.Patient.Address.Street.Trim(),
+                Number = patientRequest.Patient.Address.Number.Trim(),
+                Neighborhood = patientRequest.Patient.Address.Neighborhood.Trim(),
+                PostalCode = patientRequest.Patient.Address.PostalCode.Trim(),
+                Complement = string.IsNullOrWhiteSpace(patientRequest.Patient.Address.Complement)
+                    ? null
+                    : patientRequest.Patient.Address.Complement.Trim(),
+                City = patientRequest.Patient.Address.City.Trim(),
+                State = patientRequest.Patient.Address.State.Trim(),
             },
             Status = PatientStatus.Active,
             User = new User
             {
-                Email = patientRequest.Credentials.Email,
+                Email = patientRequest.Credentials.Email.ToLower(),
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(patientRequest.Credentials.Password),
                 Role = Role.Patient,
                 Status = AccountStatus.Active,
@@ -142,6 +168,7 @@ public class AuthService : IAuthService
         return new RegisterPatientResponse(
             patient.Id,
             patient.Name,
+            patient.MotherName,
             patient.Phone,
             patient.Cpf,
             patient.Gender,
