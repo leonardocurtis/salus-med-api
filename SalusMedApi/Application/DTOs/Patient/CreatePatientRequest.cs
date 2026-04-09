@@ -5,6 +5,8 @@ namespace SalusMedApi.Application.DTOs.Patient;
 
 public record CreatePatientRequest(
     string Name,
+    string MotherName,
+    string? FatherName,
     string Phone,
     string Cpf,
     Gender? Gender,

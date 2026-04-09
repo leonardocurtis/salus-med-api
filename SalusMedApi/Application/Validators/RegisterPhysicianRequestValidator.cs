@@ -35,8 +35,18 @@ public class RegisterPhysicianRequestValidator : AbstractValidator<RegisterPhysi
             .WithMessage("CPF must contain exactly 11 numeric digits.")
             .Must(BeAValidCpf)
             .WithMessage("Invalid CPF.");
-        RuleFor(v => v.Physician.Gender).IsInEnum().WithMessage("Gender value is invalid.");
-        RuleFor(v => v.Physician.Specialty).IsInEnum().WithMessage("Specialty value is invalid.");
+        RuleFor(v => v.Physician.Gender)
+            .Cascade(CascadeMode.Stop)
+            .NotNull()
+            .WithMessage("Gender is required.")
+            .IsInEnum()
+            .WithMessage("Gender value is invalid.");
+        RuleFor(v => v.Physician.Specialty)
+            .Cascade(CascadeMode.Stop)
+            .NotNull()
+            .WithMessage("Specialty is required.")
+            .IsInEnum()
+            .WithMessage("Specialty value is invalid.");
         RuleFor(v => v.Physician.DateOfBirth)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
@@ -53,12 +63,17 @@ public class RegisterPhysicianRequestValidator : AbstractValidator<RegisterPhysi
         RuleFor(v => v.Credentials).NotNull().SetValidator(new CredentialRequestValidator());
     }
 
-    private bool BeAtLeast18YearsOld(DateOnly dateOfBirth)
+    private bool BeAtLeast18YearsOld(DateOnly? dateOfBirth)
     {
-        var today = DateOnly.FromDateTime(DateTime.Today);
-        var age = today.Year - dateOfBirth.Year;
+        if (dateOfBirth is null)
+            return false;
 
-        if (dateOfBirth.AddYears(age) > today)
+        var birth = dateOfBirth.Value;
+
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        var age = today.Year - birth.Year;
+
+        if (birth.AddYears(age) > today)
             age--;
 
         return age >= 18;

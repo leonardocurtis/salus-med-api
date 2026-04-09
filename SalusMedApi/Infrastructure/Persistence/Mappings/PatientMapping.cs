@@ -11,6 +11,8 @@ public class PatientMapping : IEntityTypeConfiguration<Patient>
         builder.ToTable("patients");
 
         builder.Property(p => p.Name).HasMaxLength(100).IsRequired();
+        builder.Property(p => p.MotherName).HasMaxLength(100).IsRequired();
+        builder.Property(p => p.FatherName).HasMaxLength(100);
         builder.Property(p => p.Phone).HasMaxLength(20).IsRequired();
         builder.Property(p => p.Cpf).HasMaxLength(11).IsRequired();
         builder.Property(p => p.Gender).HasConversion<string>().HasMaxLength(50).IsRequired();

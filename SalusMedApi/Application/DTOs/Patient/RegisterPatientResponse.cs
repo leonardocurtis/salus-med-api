@@ -6,6 +6,7 @@ namespace SalusMedApi.Application.DTOs.Patient;
 public record RegisterPatientResponse(
     long PatientId,
     string Name,
+    string MotherName,
     string Phone,
     string Cpf,
     Gender Gender,

@@ -13,6 +13,6 @@ public record RegisterPhysicianResponse(
     DateOnly DateOfBirth,
     Specialty Specialty,
     AddressResponse Address,
-    PhysicianStatus Status,
+    EmployeeStatus Status,
     DateTimeOffset CreatedAt
 );

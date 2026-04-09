@@ -8,6 +8,8 @@ public class Patient : IAuditable
 {
     public long Id { get; set; }
     public string Name { get; set; }
+    public string MotherName { get; set; }
+    public string? FatherName { get; set; }
     public string Phone { get; set; }
     public string Cpf { get; set; }
     public Gender Gender { get; set; }

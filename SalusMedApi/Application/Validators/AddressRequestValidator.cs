@@ -24,7 +24,8 @@ public class AddressRequestValidator : AbstractValidator<AddressRequest>
         RuleFor(c => c.Complement)
             .MaximumLength(100)
             .WithMessage("Complement must not exceed 100 characters.")
-            .When(c => !string.IsNullOrEmpty(c.Complement));
+            .Must(c => c is null || !string.IsNullOrWhiteSpace(c))
+            .WithMessage("Complement cannot be empty or whitespace.");
         RuleFor(n => n.Neighborhood)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()

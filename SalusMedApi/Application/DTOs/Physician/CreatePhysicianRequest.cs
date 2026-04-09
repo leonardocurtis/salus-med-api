@@ -8,8 +8,8 @@ public record CreatePhysicianRequest(
     string Phone,
     string MedicalRegistration,
     string Cpf,
-    Gender Gender,
-    DateOnly DateOfBirth,
-    Specialty Specialty,
+    Gender? Gender,
+    DateOnly? DateOfBirth,
+    Specialty? Specialty,
     AddressRequest Address
 );

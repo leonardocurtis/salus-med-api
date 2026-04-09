@@ -13,6 +13,17 @@ public class RegisterPatientRequestValidator : AbstractValidator<RegisterPatient
             .WithMessage("Name is required.")
             .MaximumLength(100)
             .WithMessage("Name must not exceed 100 characters.");
+        RuleFor(v => v.Patient.MotherName)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty()
+            .WithMessage("Mother name is required.")
+            .MaximumLength(100)
+            .WithMessage("Mother name must not exceed 100 characters.");
+        RuleFor(v => v.Patient.FatherName)
+            .MaximumLength(100)
+            .WithMessage("Father name must not exceed 100 characters.")
+            .Must(v => v is null || !string.IsNullOrWhiteSpace(v))
+            .WithMessage("Father name cannot be empty or whitespace.");
         RuleFor(v => v.Patient.Phone)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
