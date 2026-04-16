@@ -14,6 +14,7 @@ public class AppDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Patient> Patients { get; set; }
     public DbSet<Employee> Employees { get; set; }
+    public DbSet<Department> Departments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -43,13 +44,13 @@ public class AppDbContext : DbContext
             switch (entry.State)
             {
                 case EntityState.Added:
-                    entry.Entity.CreatedAt = now;
-                    entry.Entity.UpdatedAt = null;
+                    entry.Property(nameof(IAuditable.CreatedAt)).CurrentValue = now;
+                    entry.Property(nameof(IAuditable.UpdatedAt)).CurrentValue = null;
                     break;
 
                 case EntityState.Modified:
-                    entry.Property(e => e.CreatedAt).IsModified = false;
-                    entry.Entity.UpdatedAt = now;
+                    entry.Property(nameof(IAuditable.CreatedAt)).IsModified = false;
+                    entry.Property(nameof(IAuditable.UpdatedAt)).CurrentValue = now;
                     break;
             }
         }
