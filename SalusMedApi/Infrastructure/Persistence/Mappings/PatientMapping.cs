@@ -29,6 +29,7 @@ public class PatientMapping : IEntityTypeConfiguration<Patient>
             .HasOne(p => p.User)
             .WithOne()
             .HasForeignKey<Patient>(p => p.UserId)
+            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

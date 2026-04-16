@@ -20,6 +20,7 @@ public class PhysicianMappings : IEntityTypeConfiguration<Physician>
             .HasOne(p => p.Employee)
             .WithOne()
             .HasForeignKey<Physician>(p => p.EmployeeId)
+            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
