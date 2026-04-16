@@ -6,12 +6,31 @@ namespace SalusMedApi.Domain.Entities;
 
 public class Physician : IAuditable
 {
-    public long Id { get; set; }
-    public string MedicalRegistration { get; set; }
-    public Specialty Specialty { get; set; }
-    public DateTimeOffset CreatedAt { get; set; }
-    public DateTimeOffset? UpdatedAt { get; set; }
+    public long Id { get; private set; }
+    public string MedicalRegistration { get; private set; }
+    public Specialty Specialty { get; private set; }
+    public DateTimeOffset CreatedAt { get; private set; }
+    public DateTimeOffset? UpdatedAt { get; private set; }
 
-    public long EmployeeId { get; set; }
-    public Employee Employee { get; set; }
+    public long EmployeeId { get; private set; }
+    public Employee Employee { get; private set; }
+
+    private Physician() { }
+
+    public static Physician Create(
+        string medicalRegistration,
+        Specialty specialty,
+        Employee employee
+    ) =>
+        new Physician
+        {
+            MedicalRegistration = medicalRegistration.Trim(),
+            Specialty = specialty,
+            Employee = employee,
+        };
+
+    public void UpdateRegistration(string medicalRegistration) =>
+        MedicalRegistration = medicalRegistration.Trim();
+
+    public void UpdateSpecialty(Specialty specialty) => Specialty = specialty;
 }
