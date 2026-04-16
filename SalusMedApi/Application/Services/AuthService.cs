@@ -2,6 +2,7 @@ using SalusMedApi.Application.DTOs.Address;
 using SalusMedApi.Application.DTOs.Auth;
 using SalusMedApi.Application.DTOs.Patient;
 using SalusMedApi.Application.DTOs.Physician;
+using SalusMedApi.Application.Mapper;
 using SalusMedApi.Application.Services.Interfaces;
 using SalusMedApi.CrossCutting.Exceptions;
 using SalusMedApi.Domain.Entities;
@@ -18,13 +19,15 @@ public class AuthService : IAuthService
     private readonly IPhysicianRepository _physicianRepository;
     private readonly IPatientRepository _patientRepository;
     private readonly IEmployeeRepository _employeeRepository;
+    private readonly IDepartmentRepository _departmentRepository;
 
     public AuthService(
         ITokenService tokenService,
         IUserRepository userRepository,
         IPhysicianRepository physicianRepository,
         IPatientRepository patientRepository,
-        IEmployeeRepository employeeRepository
+        IEmployeeRepository employeeRepository,
+        IDepartmentRepository departmentRepository
     )
     {
         _tokenService = tokenService;
@@ -32,6 +35,7 @@ public class AuthService : IAuthService
         _physicianRepository = physicianRepository;
         _patientRepository = patientRepository;
         _employeeRepository = employeeRepository;
+        _departmentRepository = departmentRepository;
     }
 
     public async Task<RegisterPhysicianResponse> RegisterPhysicianAsync(
@@ -55,43 +59,12 @@ public class AuthService : IAuthService
                 $"Medical registration number {physicianRequest.Physician.MedicalRegistration} is already associated with an account."
             );
 
-        var physician = new Physician
-        {
-            MedicalRegistration = physicianRequest.Physician.MedicalRegistration.Trim(),
-            Specialty = physicianRequest.Physician.Specialty!.Value,
-            Employee = new Employee
-            {
-                Name = physicianRequest.Physician.Name.Trim(),
-                Phone = physicianRequest.Physician.Phone,
-                Cpf = physicianRequest.Physician.Cpf.Trim(),
-                Gender = physicianRequest.Physician.Gender!.Value,
-                DateOfBirth = physicianRequest.Physician.DateOfBirth!.Value,
-                Status = EmployeeStatus.Active,
-                Address = new Address
-                {
-                    Street = physicianRequest.Physician.Address.Street.Trim(),
-                    Number = physicianRequest.Physician.Address.Number.Trim(),
-                    Neighborhood = physicianRequest.Physician.Address.Neighborhood.Trim(),
-                    PostalCode = physicianRequest.Physician.Address.PostalCode.Trim(),
-                    Complement = string.IsNullOrWhiteSpace(
-                        physicianRequest.Physician.Address.Complement
-                    )
-                        ? null
-                        : physicianRequest.Physician.Address.Complement.Trim(),
-                    City = physicianRequest.Physician.Address.City.Trim(),
-                    State = physicianRequest.Physician.Address.State.Trim(),
-                },
-                User = new User
-                {
-                    Email = physicianRequest.Credentials.Email.ToLower().Trim(),
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(
-                        physicianRequest.Credentials.Password
-                    ),
-                    Role = Role.Physician,
-                    Status = AccountStatus.Active,
-                },
-            },
-        };
+        var department =
+            await _departmentRepository.GetDepartmentByIdAsync(
+                physicianRequest.Physician.DepartmentId
+            ) ?? throw new ResourceNotFoundException("Department not found.");
+
+        var physician = PhysicianMapper.ToEntity(physicianRequest, department);
 
         await _physicianRepository.SaveAsync(physician);
 
@@ -130,38 +103,7 @@ public class AuthService : IAuthService
         if (await _patientRepository.CpfExistsAsync(patientRequest.Patient.Cpf))
             throw new ConflictException($"Cpf {patientRequest.Patient.Cpf} already in use.");
 
-        var patient = new Patient
-        {
-            Name = patientRequest.Patient.Name.Trim(),
-            MotherName = patientRequest.Patient.MotherName.Trim(),
-            FatherName = string.IsNullOrWhiteSpace(patientRequest.Patient.FatherName)
-                ? null
-                : patientRequest.Patient.FatherName.Trim(),
-            Phone = patientRequest.Patient.Phone.Trim(),
-            Cpf = patientRequest.Patient.Cpf.Trim(),
-            Gender = patientRequest.Patient.Gender!.Value,
-            DateOfBirth = patientRequest.Patient.DateOfBirth!.Value,
-            Address = new Address
-            {
-                Street = patientRequest.Patient.Address.Street.Trim(),
-                Number = patientRequest.Patient.Address.Number.Trim(),
-                Neighborhood = patientRequest.Patient.Address.Neighborhood.Trim(),
-                PostalCode = patientRequest.Patient.Address.PostalCode.Trim(),
-                Complement = string.IsNullOrWhiteSpace(patientRequest.Patient.Address.Complement)
-                    ? null
-                    : patientRequest.Patient.Address.Complement.Trim(),
-                City = patientRequest.Patient.Address.City.Trim(),
-                State = patientRequest.Patient.Address.State.Trim(),
-            },
-            Status = PatientStatus.Active,
-            User = new User
-            {
-                Email = patientRequest.Credentials.Email.ToLower(),
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(patientRequest.Credentials.Password),
-                Role = Role.Patient,
-                Status = AccountStatus.Active,
-            },
-        };
+        var patient = PatientMapper.ToEntity(patientRequest);
 
         await _patientRepository.SaveAsync(patient);
 

@@ -11,5 +11,6 @@ public record CreatePhysicianRequest(
     Gender? Gender,
     DateOnly? DateOfBirth,
     Specialty? Specialty,
-    AddressRequest Address
+    AddressRequest Address,
+    long DepartmentId
 );

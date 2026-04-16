@@ -9,6 +9,7 @@ public static class DependencyInjectionExtensions
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
+        services.AddScoped<IPdfService, AppointmentPdfService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ITokenService, TokenService>();
         return services;
@@ -16,6 +17,7 @@ public static class DependencyInjectionExtensions
 
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
+        services.AddScoped<IDepartmentRepository, DepartmentRepository>();
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IPatientRepository, PatientRepository>();
         services.AddScoped<IPhysicianRepository, PhysicianRepository>();
