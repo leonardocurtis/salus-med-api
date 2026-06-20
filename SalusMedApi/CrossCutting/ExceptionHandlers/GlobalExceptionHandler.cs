@@ -14,9 +14,11 @@ public class GlobalExceptionHandler : IExceptionHandler
     {
         var (statusCode, type) = exception switch
         {
-            UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, "unauthorized"),
+            UnauthorizedException => (StatusCodes.Status401Unauthorized, "unauthorized"),
             ResourceNotFoundException => (StatusCodes.Status404NotFound, "resource-not-found"),
             ForbiddenException => (StatusCodes.Status403Forbidden, "access-denied"),
+            ConflictException => (StatusCodes.Status409Conflict, "conflict"),
+            DomainException => (StatusCodes.Status400BadRequest, "domain-error"),
             _ => (StatusCodes.Status500InternalServerError, "internal-error"),
         };
 
@@ -53,6 +55,9 @@ public class GlobalExceptionHandler : IExceptionHandler
         {
             400 => "Bad Request",
             404 => "Not Found",
+            401 => "Unauthorized",
+            403 => "Forbidden",
+            409 => "Conflict",
             _ => "Internal Server Error",
         };
 }
