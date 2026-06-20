@@ -13,7 +13,7 @@ public class User : IAuditable
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset? UpdatedAt { get; private set; }
 
-    public User() { }
+    private User() { }
 
     public static User Create(string email, string passwordHash, Role role) =>
         new User

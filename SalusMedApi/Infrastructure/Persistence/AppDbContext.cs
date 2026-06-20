@@ -15,6 +15,8 @@ public class AppDbContext : DbContext
     public DbSet<Patient> Patients { get; set; }
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Department> Departments { get; set; }
+    public DbSet<Clinic> Clinics { get; set; }
+    public DbSet<HealthUnit> HealthUnits { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

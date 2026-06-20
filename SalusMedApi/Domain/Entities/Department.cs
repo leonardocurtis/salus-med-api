@@ -12,10 +12,18 @@ public class Department : IAuditable
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset? UpdatedAt { get; private set; }
 
-    public Department() { }
+    public long HealthUnitId { get; private set; }
+    public HealthUnit HealthUnit { get; private set; }
 
-    public static Department Create(string name) =>
-        new Department { Name = name.Trim(), Status = DepartmentStatus.Active };
+    private Department() { }
+
+    public static Department Create(string name, HealthUnit healthUnit) =>
+        new Department
+        {
+            Name = name.Trim(),
+            HealthUnit = healthUnit,
+            Status = DepartmentStatus.Active,
+        };
 
     public void Rename(string newName) => Name = newName.Trim();
 
