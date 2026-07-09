@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SalusMedApi.Domain.ValueObjects;
+using SalusMedApi.Infrastructure.Persistence.Converters;
 
 namespace SalusMedApi.Infrastructure.Persistence.Mappings;
 
@@ -33,13 +34,24 @@ public static class AddressMapping
                     .HasColumnName("neighborhood")
                     .HasMaxLength(100)
                     .IsRequired();
-                address
-                    .Property(a => a.PostalCode)
-                    .HasColumnName("postal_code")
-                    .HasMaxLength(8)
-                    .IsRequired();
+                address.ComplexProperty(
+                    a => a.PostalCode,
+                    postalCodeBuilder =>
+                    {
+                        postalCodeBuilder
+                            .Property(p => p.Value)
+                            .HasColumnName("postal_code")
+                            .HasMaxLength(8)
+                            .IsRequired();
+                    }
+                );
                 address.Property(a => a.City).HasColumnName("city").HasMaxLength(100).IsRequired();
-                address.Property(a => a.State).HasColumnName("state").HasMaxLength(2).IsRequired();
+                address
+                    .Property(a => a.State)
+                    .HasColumnName("state")
+                    .HasConversion<string>()
+                    .HasMaxLength(2)
+                    .IsRequired();
             }
         );
     }

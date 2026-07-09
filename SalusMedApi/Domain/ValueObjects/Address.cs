@@ -1,14 +1,17 @@
+using SalusMedApi.CrossCutting.Exceptions;
+using SalusMedApi.Domain.Enums;
+
 namespace SalusMedApi.Domain.ValueObjects;
 
-public class Address
+public sealed record Address
 {
-    public string Street { get; private set; }
-    public string Number { get; private set; }
-    public string Neighborhood { get; private set; }
-    public string PostalCode { get; private set; }
-    public string? Complement { get; private set; }
-    public string City { get; private set; }
-    public string State { get; private set; }
+    public string Street { get; private init; } = null!;
+    public string Number { get; private init; } = null!;
+    public string Neighborhood { get; private init; } = null!;
+    public PostalCode PostalCode { get; private init; } = null!;
+    public string? Complement { get; private init; }
+    public string City { get; private init; } = null!;
+    public BrazilianState State { get; private init; }
 
     private Address() { }
 
@@ -20,34 +23,28 @@ public class Address
         string? complement,
         string city,
         string state
-    ) =>
-        new Address
+    )
+    {
+        if (string.IsNullOrWhiteSpace(street))
+            throw new DomainException("Street cannot be empty.");
+        if (string.IsNullOrWhiteSpace(number))
+            throw new DomainException("Number cannot be empty.");
+        if (string.IsNullOrWhiteSpace(neighborhood))
+            throw new DomainException("Neighborhood cannot be empty.");
+        if (string.IsNullOrWhiteSpace(city))
+            throw new DomainException("City cannot be empty.");
+        if (!Enum.TryParse<BrazilianState>(state.Trim().ToUpperInvariant(), out var parsedState))
+            throw new DomainException("Invalid Brazilian state.");
+
+        return new Address
         {
             Street = street.Trim(),
             Number = number.Trim(),
             Neighborhood = neighborhood.Trim(),
-            PostalCode = postalCode.Trim(),
+            PostalCode = PostalCode.Create(postalCode),
             Complement = complement?.Trim(),
             City = city.Trim(),
-            State = state.Trim(),
+            State = parsedState,
         };
-
-    public void Update(
-        string street,
-        string number,
-        string neighborhood,
-        string postalCode,
-        string? complement,
-        string city,
-        string state
-    )
-    {
-        Street = street.Trim();
-        Number = number.Trim();
-        Neighborhood = neighborhood.Trim();
-        PostalCode = postalCode.Trim();
-        Complement = complement?.Trim();
-        City = city.Trim();
-        State = state.Trim();
     }
 }
