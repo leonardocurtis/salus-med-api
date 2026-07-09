@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SalusMedApi.Domain.Entities;
+using SalusMedApi.Infrastructure.Persistence.Converters;
 
 namespace SalusMedApi.Infrastructure.Persistence.Mappings;
 
@@ -11,15 +12,25 @@ public class EmployeeMapping : IEntityTypeConfiguration<Employee>
         builder.ToTable("employees");
 
         builder.Property(e => e.Name).HasMaxLength(100).IsRequired();
-        builder.Property(e => e.Phone).HasMaxLength(20).IsRequired();
-        builder.Property(e => e.Cpf).HasMaxLength(11).IsRequired();
+        builder
+            .Property(e => e.PhoneNumber)
+            .HasConversion(new PhoneConverter())
+            .HasMaxLength(20)
+            .HasColumnName("phone")
+            .IsRequired();
+        builder
+            .Property(e => e.CpfNumber)
+            .HasConversion(new CpfConverter())
+            .HasMaxLength(11)
+            .HasColumnName("cpf")
+            .IsRequired();
         builder.Property(e => e.Gender).HasConversion<string>().HasMaxLength(50).IsRequired();
         builder.Property(e => e.DateOfBirth).IsRequired();
         builder.Property(e => e.Status).IsRequired().HasMaxLength(50).HasConversion<string>();
         builder.Property(e => e.Role).IsRequired().HasMaxLength(50).HasConversion<string>();
 
-        builder.HasIndex(e => e.Phone).IsUnique();
-        builder.HasIndex(e => e.Cpf).IsUnique();
+        builder.HasIndex(e => e.PhoneNumber).IsUnique();
+        builder.HasIndex(e => e.CpfNumber).IsUnique();
 
         builder.ConfigureAddress(e => e.Address);
 
@@ -28,7 +39,7 @@ public class EmployeeMapping : IEntityTypeConfiguration<Employee>
             .WithOne()
             .HasForeignKey<Employee>(e => e.UserId)
             .IsRequired()
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder
             .HasOne(e => e.Department)

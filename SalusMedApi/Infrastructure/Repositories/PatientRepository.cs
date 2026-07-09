@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SalusMedApi.Domain.Entities;
+using SalusMedApi.Domain.ValueObjects;
 using SalusMedApi.Infrastructure.Persistence;
 using SalusMedApi.Infrastructure.Repositories.Interfaces;
 
@@ -14,8 +15,12 @@ public class PatientRepository : IPatientRepository
         _context = context;
     }
 
-    public async Task<bool> CpfExistsAsync(string cpf) =>
-        await _context.Patients.AnyAsync(x => x.Cpf == cpf);
+    public async Task<bool> CpfExistsAsync(string cpf)
+    {
+        var cpfVo = Cpf.Create(cpf);
+
+        return await _context.Patients.AnyAsync(x => x.CpfCode == cpfVo);
+    }
 
     public async Task<Patient> SaveAsync(Patient patient)
     {

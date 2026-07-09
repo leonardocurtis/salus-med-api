@@ -1,9 +1,10 @@
 using SalusMedApi.Domain.Entities;
+using SalusMedApi.Domain.ValueObjects;
 
 namespace SalusMedApi.Infrastructure.Repositories.Interfaces;
 
 public interface IUserRepository
 {
-    Task<User?> GetUserByEmailAsync(string email);
-    Task<bool> EmailExistAsync(string email);
+    Task<User?> GetUserByEmailAsync(Email email);
+    Task<bool> EmailExistAsync(Email email);
 }

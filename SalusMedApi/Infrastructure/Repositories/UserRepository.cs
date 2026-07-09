@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SalusMedApi.Domain.Entities;
+using SalusMedApi.Domain.ValueObjects;
 using SalusMedApi.Infrastructure.Persistence;
 using SalusMedApi.Infrastructure.Repositories.Interfaces;
 
@@ -14,9 +15,9 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public async Task<User?> GetUserByEmailAsync(string email) =>
-        await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
+    public async Task<User?> GetUserByEmailAsync(Email email) =>
+        await _context.Users.FirstOrDefaultAsync(x => x.EmailAddress == email);
 
-    public async Task<bool> EmailExistAsync(string email) =>
-        await _context.Users.AnyAsync(x => x.Email == email);
+    public async Task<bool> EmailExistAsync(Email email) =>
+        await _context.Users.AnyAsync(x => x.EmailAddress == email);
 }

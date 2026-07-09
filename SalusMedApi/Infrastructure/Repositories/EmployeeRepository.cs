@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using SalusMedApi.Domain.ValueObjects;
 using SalusMedApi.Infrastructure.Persistence;
 using SalusMedApi.Infrastructure.Repositories.Interfaces;
 
@@ -13,6 +14,10 @@ public class EmployeeRepository : IEmployeeRepository
         _context = context;
     }
 
-    public async Task<bool> CpfExistsAsync(string cpf) =>
-        await _context.Employees.AnyAsync(x => x.Cpf == cpf);
+    public async Task<bool> CpfExistsAsync(string cpf)
+    {
+        var cpfVo = Cpf.Create(cpf);
+
+        return await _context.Employees.AnyAsync(x => x.CpfNumber == cpfVo);
+    }
 }

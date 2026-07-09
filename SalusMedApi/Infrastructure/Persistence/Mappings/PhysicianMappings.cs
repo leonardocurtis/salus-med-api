@@ -10,17 +10,32 @@ public class PhysicianMappings : IEntityTypeConfiguration<Physician>
     {
         builder.ToTable("physicians");
 
-        builder.Property(p => p.MedicalRegistration).HasMaxLength(6).IsRequired();
+        builder.ComplexProperty(
+            p => p.MedicalRegistration,
+            crm =>
+            {
+                crm.Property(c => c.Number)
+                    .HasColumnName("crm_number")
+                    .HasMaxLength(6)
+                    .IsRequired();
+
+                crm.Property(c => c.State)
+                    .HasColumnName("crm_state")
+                    .HasConversion<string>()
+                    .HasMaxLength(2)
+                    .IsRequired();
+            }
+        );
         builder.Property(p => p.Specialty).HasConversion<string>().HasMaxLength(100).IsRequired();
         builder.Property(p => p.CreatedAt).IsRequired();
 
-        builder.HasIndex(p => p.MedicalRegistration).IsUnique();
+        builder.HasIndex("crm_number", "crm_state").IsUnique();
 
         builder
             .HasOne(p => p.Employee)
             .WithOne()
             .HasForeignKey<Physician>(p => p.EmployeeId)
             .IsRequired()
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

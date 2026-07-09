@@ -42,7 +42,9 @@ public class AuthService : IAuthService
         RegisterPhysicianRequest physicianRequest
     )
     {
-        if (await _userRepository.EmailExistAsync(physicianRequest.Credentials.Email))
+        var email = Email.Create(physicianRequest.Credentials.Email);
+
+        if (await _userRepository.EmailExistAsync(email))
             throw new ConflictException(
                 $"Email {physicianRequest.Credentials.Email} already in use."
             );
@@ -71,9 +73,9 @@ public class AuthService : IAuthService
         return new RegisterPhysicianResponse(
             physician.Id,
             physician.Employee.Name,
-            physician.Employee.Phone,
-            physician.MedicalRegistration,
-            physician.Employee.Cpf,
+            physician.Employee.PhoneNumber.Formatted(),
+            physician.MedicalRegistration.Formatted(),
+            physician.Employee.CpfNumber.Formatted(),
             physician.Employee.Gender,
             physician.Employee.DateOfBirth,
             physician.Specialty,
@@ -82,7 +84,7 @@ public class AuthService : IAuthService
                 physician.Employee.Address.Number,
                 physician.Employee.Address.Complement,
                 physician.Employee.Address.Neighborhood,
-                physician.Employee.Address.PostalCode,
+                physician.Employee.Address.PostalCode.Formatted(),
                 physician.Employee.Address.City,
                 physician.Employee.Address.State
             ),
@@ -95,7 +97,9 @@ public class AuthService : IAuthService
         RegisterPatientRequest patientRequest
     )
     {
-        if (await _userRepository.EmailExistAsync(patientRequest.Credentials.Email))
+        var email = Email.Create(patientRequest.Credentials.Email);
+
+        if (await _userRepository.EmailExistAsync(email))
             throw new ConflictException(
                 $"Email {patientRequest.Credentials.Email} already in use."
             );
@@ -111,8 +115,8 @@ public class AuthService : IAuthService
             patient.Id,
             patient.Name,
             patient.MotherName,
-            patient.Phone,
-            patient.Cpf,
+            patient.PhoneNumber.Formatted(),
+            patient.CpfCode.Formatted(),
             patient.Gender,
             patient.DateOfBirth,
             new AddressResponse(
@@ -120,7 +124,7 @@ public class AuthService : IAuthService
                 patient.Address.Number,
                 patient.Address.Complement,
                 patient.Address.Neighborhood,
-                patient.Address.PostalCode,
+                patient.Address.PostalCode.Formatted(),
                 patient.Address.City,
                 patient.Address.State
             ),
@@ -131,8 +135,10 @@ public class AuthService : IAuthService
 
     public async Task<LoginResponse> LoginAsync(LoginRequest loginRequest)
     {
+        var email = Email.Create(loginRequest.Email);
+
         var user =
-            await _userRepository.GetUserByEmailAsync(loginRequest.Email.ToLower())
+            await _userRepository.GetUserByEmailAsync(email)
             ?? throw new UnauthorizedException("Invalid credentials.");
 
         if (user.Status == AccountStatus.Deactivated)
@@ -143,6 +149,11 @@ public class AuthService : IAuthService
 
         var token = _tokenService.GenerateToken(user);
 
-        return new LoginResponse(user.Id, user.Email, token.UserToken, token.ExpiresAt);
+        return new LoginResponse(
+            user.Id,
+            user.EmailAddress.ToString(),
+            token.UserToken,
+            token.ExpiresAt
+        );
     }
 }

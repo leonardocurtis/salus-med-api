@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SalusMedApi.Domain.Entities;
+using SalusMedApi.Domain.ValueObjects;
 using SalusMedApi.Infrastructure.Persistence;
 using SalusMedApi.Infrastructure.Repositories.Interfaces;
 
@@ -21,6 +22,10 @@ public class PhysicianRepository : IPhysicianRepository
         return physician;
     }
 
-    public async Task<bool> MedicalRegistrationExistsAsync(string medicalRegistration) =>
-        await _context.Physicians.AnyAsync(p => p.MedicalRegistration == medicalRegistration);
+    public async Task<bool> MedicalRegistrationExistsAsync(string medicalRegistration)
+    {
+        var crmVo = Crm.Create(medicalRegistration);
+
+        return await _context.Physicians.AnyAsync(p => p.MedicalRegistration == crmVo);
+    }
 }
