@@ -1,3 +1,4 @@
+using SalusMedApi.CrossCutting.Exceptions;
 using SalusMedApi.Domain.Enums;
 using SalusMedApi.Domain.ValueObjects;
 using SalusMedApi.Infrastructure.Repositories.Interfaces;
@@ -7,7 +8,7 @@ namespace SalusMedApi.Domain.Entities;
 public class Physician : IAuditable
 {
     public long Id { get; private set; }
-    public string MedicalRegistration { get; private set; }
+    public Crm MedicalRegistration { get; private set; }
     public Specialty Specialty { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset? UpdatedAt { get; private set; }
@@ -21,16 +22,34 @@ public class Physician : IAuditable
         string medicalRegistration,
         Specialty specialty,
         Employee employee
-    ) =>
-        new Physician
+    )
+    {
+        if (employee is null)
+            throw new DomainException("A physician must be linked to an existing employee.");
+
+        EnsureValidSpecialty(specialty);
+
+        return new Physician
         {
-            MedicalRegistration = medicalRegistration.Trim(),
+            MedicalRegistration = Crm.Create(medicalRegistration),
             Specialty = specialty,
             Employee = employee,
+            EmployeeId = employee.Id,
         };
+    }
 
     public void UpdateRegistration(string medicalRegistration) =>
-        MedicalRegistration = medicalRegistration.Trim();
+        MedicalRegistration = Crm.Create(medicalRegistration);
 
-    public void UpdateSpecialty(Specialty specialty) => Specialty = specialty;
+    public void UpdateSpecialty(Specialty specialty)
+    {
+        EnsureValidSpecialty(specialty);
+        Specialty = specialty;
+    }
+
+    private static void EnsureValidSpecialty(Specialty specialty)
+    {
+        if (!Enum.IsDefined(specialty))
+            throw new DomainException($"'{specialty}' is not a valid medical specialty.");
+    }
 }

@@ -1,3 +1,4 @@
+using SalusMedApi.CrossCutting.Exceptions;
 using SalusMedApi.Domain.Enums;
 using SalusMedApi.Domain.ValueObjects;
 using SalusMedApi.Infrastructure.Repositories.Interfaces;
@@ -10,12 +11,13 @@ public class Patient : IAuditable
     public string Name { get; private set; }
     public string MotherName { get; private set; }
     public string? FatherName { get; private set; }
-    public string Phone { get; private set; }
-    public string Cpf { get; private set; }
+    public Phone PhoneNumber { get; private set; }
+    public Cpf CpfCode { get; private set; }
     public Gender Gender { get; private set; }
     public DateOnly DateOfBirth { get; private set; }
     public Address Address { get; private set; }
     public PatientStatus Status { get; private set; }
+
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset? UpdatedAt { get; private set; }
 
@@ -34,38 +36,70 @@ public class Patient : IAuditable
         DateOnly dateOfBirth,
         Address address,
         User user
-    ) =>
-        new Patient
+    )
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("Patient name is required.");
+
+        if (string.IsNullOrWhiteSpace(motherName))
+            throw new DomainException("Mother's name is required.");
+
+        if (dateOfBirth > DateOnly.FromDateTime(DateTime.UtcNow))
+            throw new DomainException("Date of birth cannot be in the future.");
+
+        return new Patient
         {
             Name = name.Trim(),
             MotherName = motherName.Trim(),
-            FatherName = fatherName?.Trim(),
-            Phone = phone.Trim(),
-            Cpf = cpf.Trim(),
+            FatherName = string.IsNullOrWhiteSpace(fatherName) ? null : fatherName.Trim(),
+            PhoneNumber = Phone.Create(phone),
+            CpfCode = Cpf.Create(cpf),
             Gender = gender,
             DateOfBirth = dateOfBirth,
             Status = PatientStatus.Active,
             Address = address,
             User = user,
         };
+    }
 
-    public void UpdateContact(string phone) => Phone = phone.Trim();
+    public void UpdateContact(string phone) => PhoneNumber = Phone.Create(phone);
 
-    public void UpdateAddress(Address address) => Address = address;
+    public void UpdateAddress(Address address)
+    {
+        Address = address ?? throw new DomainException("Address is required.");
+    }
 
-    public void UpdateName(string name) => Name = name.Trim();
+    public void UpdateName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("Patient name is required.");
 
-    public void UpdateFatherName(string name) => FatherName = name.Trim();
+        Name = name.Trim();
+    }
+
+    public void UpdateFatherName(string? name)
+    {
+        FatherName = string.IsNullOrWhiteSpace(name) ? null : name.Trim();
+    }
 
     public void UpdateGender(Gender gender) => Gender = gender;
 
-    public void MarkAsActive() => Status = PatientStatus.Active;
+    public void Activate()
+    {
+        if (Status == PatientStatus.Deceased)
+            throw new DomainException("Cannot change the status of a deceased patient.");
 
-    public void MarkAsDeactivated() => Status = PatientStatus.Deactivated;
+        if (Status == PatientStatus.Active)
+            throw new DomainException("Patient is already active.");
 
-    public void MarkAsBlocked() => Status = PatientStatus.Blocked;
+        Status = PatientStatus.Active;
+    }
 
-    public void MarkAsPending() => Status = PatientStatus.Pending;
+    public void RegisterAsDeceased()
+    {
+        if (Status == PatientStatus.Deceased)
+            throw new DomainException("Patient is already registered as deceased.");
 
-    public void MarkAsDeceased() => Status = PatientStatus.Deceased;
+        Status = PatientStatus.Deceased;
+    }
 }

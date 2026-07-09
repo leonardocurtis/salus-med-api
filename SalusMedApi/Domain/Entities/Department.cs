@@ -1,3 +1,4 @@
+using SalusMedApi.CrossCutting.Exceptions;
 using SalusMedApi.Domain.Enums;
 using SalusMedApi.Infrastructure.Repositories.Interfaces;
 
@@ -17,17 +18,40 @@ public class Department : IAuditable
 
     private Department() { }
 
-    public static Department Create(string name, HealthUnit healthUnit) =>
-        new Department
+    public static Department Create(string name, HealthUnit healthUnit)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("Department name is required.");
+
+        return new Department
         {
             Name = name.Trim(),
             HealthUnit = healthUnit,
             Status = DepartmentStatus.Active,
         };
+    }
 
-    public void Rename(string newName) => Name = newName.Trim();
+    public void Rename(string newName)
+    {
+        if (string.IsNullOrWhiteSpace(newName))
+            throw new DomainException("Department name is required.");
 
-    public void MarkAsActive() => Status = DepartmentStatus.Active;
+        Name = newName.Trim();
+    }
 
-    public void MarkAsDeactivated() => Status = DepartmentStatus.Deactivated;
+    public void Activate()
+    {
+        if (Status == DepartmentStatus.Active)
+            throw new DomainException("Department is already active.");
+
+        Status = DepartmentStatus.Active;
+    }
+
+    public void Deactivate()
+    {
+        if (Status != DepartmentStatus.Active)
+            throw new DomainException($"Cannot deactivate a department in status '{Status}'.");
+
+        Status = DepartmentStatus.Deactivated;
+    }
 }
