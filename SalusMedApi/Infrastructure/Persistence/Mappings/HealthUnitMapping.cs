@@ -46,7 +46,7 @@ public class HealthUnitMapping : IEntityTypeConfiguration<HealthUnit>
             .HasColumnName("phone");
         builder.Property(h => h.Status).IsRequired().HasMaxLength(50).HasConversion<string>();
 
-        builder.HasIndex(h => h.CnesCode).IsUnique().HasFilter("[cnes] IS NOT NULL");
+        builder.HasIndex(h => h.CnesCode).IsUnique().HasFilter("cnes IS NOT NULL");
         builder.HasIndex(h => h.CnpjCode).IsUnique();
 
         builder.ConfigureAddress(e => e.Address);

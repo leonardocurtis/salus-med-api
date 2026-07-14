@@ -29,8 +29,6 @@ public class PhysicianMappings : IEntityTypeConfiguration<Physician>
         builder.Property(p => p.Specialty).HasConversion<string>().HasMaxLength(100).IsRequired();
         builder.Property(p => p.CreatedAt).IsRequired();
 
-        builder.HasIndex("crm_number", "crm_state").IsUnique();
-
         builder
             .HasOne(p => p.Employee)
             .WithOne()
