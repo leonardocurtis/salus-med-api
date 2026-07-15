@@ -33,8 +33,7 @@ public static class PatientMapper
     private static User MapUser(CredentialRequest credentials) =>
         User.Create(
             email: credentials.Email,
-            passwordHash: BCrypt.Net.BCrypt.HashPassword(credentials.Password),
-            role: Role.Patient
+            passwordHash: BCrypt.Net.BCrypt.HashPassword(credentials.Password)
         );
 
     private static Address MapAddress(AddressRequest address) =>

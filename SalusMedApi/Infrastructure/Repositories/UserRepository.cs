@@ -15,8 +15,13 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public async Task<User?> GetUserByEmailAsync(Email email) =>
-        await _context.Users.FirstOrDefaultAsync(x => x.EmailAddress == email);
+    public async Task<User?> GetUserByEmailAsync(Email email)
+    {
+        return await _context
+            .Users.Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+            .FirstOrDefaultAsync(x => x.EmailAddress == email);
+    }
 
     public async Task<bool> EmailExistAsync(Email email) =>
         await _context.Users.AnyAsync(x => x.EmailAddress == email);

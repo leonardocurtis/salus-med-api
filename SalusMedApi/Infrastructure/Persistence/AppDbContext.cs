@@ -1,5 +1,6 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using SalusMedApi.Domain.Common;
 using SalusMedApi.Domain.Entities;
 using SalusMedApi.Infrastructure.Repositories.Interfaces;
 
@@ -17,6 +18,8 @@ public class AppDbContext : DbContext
     public DbSet<Department> Departments { get; set; }
     public DbSet<Clinic> Clinics { get; set; }
     public DbSet<HealthUnit> HealthUnits { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<UserRole> UserRoles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -37,8 +37,7 @@ public static class PhysicianMapper
     private static User MapUser(CredentialRequest credentials) =>
         User.Create(
             email: credentials.Email,
-            passwordHash: BCrypt.Net.BCrypt.HashPassword(credentials.Password),
-            role: Role.Physician
+            passwordHash: BCrypt.Net.BCrypt.HashPassword(credentials.Password)
         );
 
     private static Address MapAddress(AddressRequest address) =>
