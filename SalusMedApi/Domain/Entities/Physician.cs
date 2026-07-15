@@ -1,17 +1,15 @@
 using SalusMedApi.CrossCutting.Exceptions;
+using SalusMedApi.Domain.Common;
 using SalusMedApi.Domain.Enums;
 using SalusMedApi.Domain.ValueObjects;
 using SalusMedApi.Infrastructure.Repositories.Interfaces;
 
 namespace SalusMedApi.Domain.Entities;
 
-public class Physician : IAuditable
+public class Physician : AuditableEntity
 {
-    public long Id { get; private set; }
     public Crm MedicalRegistration { get; private set; }
     public Specialty Specialty { get; private set; }
-    public DateTimeOffset CreatedAt { get; private set; }
-    public DateTimeOffset? UpdatedAt { get; private set; }
 
     public long EmployeeId { get; private set; }
     public Employee Employee { get; private set; }

@@ -1,4 +1,4 @@
-namespace SalusMedApi.Infrastructure.Repositories.Interfaces;
+namespace SalusMedApi.Domain.Common;
 
 public interface IAuditable
 {

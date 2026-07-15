@@ -1,13 +1,13 @@
 using SalusMedApi.CrossCutting.Exceptions;
+using SalusMedApi.Domain.Common;
 using SalusMedApi.Domain.Enums;
 using SalusMedApi.Domain.ValueObjects;
 using SalusMedApi.Infrastructure.Repositories.Interfaces;
 
 namespace SalusMedApi.Domain.Entities;
 
-public class Patient : IAuditable
+public class Patient : AuditableEntity
 {
-    public long Id { get; private set; }
     public string Name { get; private set; }
     public string MotherName { get; private set; }
     public string? FatherName { get; private set; }
@@ -17,9 +17,6 @@ public class Patient : IAuditable
     public DateOnly DateOfBirth { get; private set; }
     public Address Address { get; private set; }
     public PatientStatus Status { get; private set; }
-
-    public DateTimeOffset CreatedAt { get; private set; }
-    public DateTimeOffset? UpdatedAt { get; private set; }
 
     public long UserId { get; private set; }
     public User User { get; private set; }

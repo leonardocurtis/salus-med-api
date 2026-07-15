@@ -1,20 +1,17 @@
 using SalusMedApi.CrossCutting.Exceptions;
+using SalusMedApi.Domain.Common;
 using SalusMedApi.Domain.Enums;
 using SalusMedApi.Domain.ValueObjects;
 using SalusMedApi.Infrastructure.Repositories.Interfaces;
 
 namespace SalusMedApi.Domain.Entities;
 
-public class Clinic : IAuditable
+public class Clinic : AuditableEntity
 {
-    public long Id { get; private set; }
     public string CorporateName { get; private set; }
     public string? TradeName { get; private set; }
     public Cnpj CnpjCode { get; private set; }
     public ClinicStatus Status { get; private set; }
-
-    public DateTimeOffset CreatedAt { get; private set; }
-    public DateTimeOffset? UpdatedAt { get; private set; }
 
     private Clinic() { }
 

@@ -1,23 +1,24 @@
 using SalusMedApi.CrossCutting.Exceptions;
+using SalusMedApi.Domain.Common;
 using SalusMedApi.Domain.Enums;
 using SalusMedApi.Domain.ValueObjects;
-using SalusMedApi.Infrastructure.Repositories.Interfaces;
 
 namespace SalusMedApi.Domain.Entities;
 
-public class User : IAuditable
+public class User : AuditableEntity
 {
-    public long Id { get; private set; }
-    public Email EmailAddress { get; private set; }
-    public string PasswordHash { get; private set; }
-    public Role Role { get; private set; }
+    public Email EmailAddress { get; private set; } = null!;
+    public string PasswordHash { get; private set; } = string.Empty;
     public AccountStatus Status { get; private set; }
-    public DateTimeOffset CreatedAt { get; private set; }
-    public DateTimeOffset? UpdatedAt { get; private set; }
+
+    private readonly List<UserRole> _userRoles = [];
+    public IReadOnlyCollection<UserRole> UserRoles => _userRoles.AsReadOnly();
+
+    public IEnumerable<string> RoleNames => _userRoles.Select(ur => ur.Role.Name);
 
     private User() { }
 
-    public static User Create(string email, string passwordHash, Role role)
+    public static User Create(string email, string passwordHash)
     {
         if (string.IsNullOrWhiteSpace(passwordHash))
             throw new DomainException("Password hash cannot be empty.");
@@ -26,7 +27,6 @@ public class User : IAuditable
         {
             EmailAddress = Email.Create(email),
             PasswordHash = passwordHash,
-            Role = role,
             Status = AccountStatus.Active,
         };
     }
@@ -65,11 +65,23 @@ public class User : IAuditable
         EmailAddress = email;
     }
 
-    public void ChangeRole(Role newRole)
+    public void AssignRole(Role role)
     {
-        if (Role == newRole)
-            throw new DomainException($"User already has the role '{newRole}'.");
+        if (_userRoles.Any(ur => ur.RoleId == role.Id))
+            return;
 
-        Role = newRole;
+        _userRoles.Add(new UserRole(Id, role.Id));
     }
+
+    public void RemoveRole(Role role)
+    {
+        var userRole = _userRoles.FirstOrDefault(ur => ur.RoleId == role.Id);
+
+        if (userRole is null)
+            throw new DomainException($"User does not have the role '{role.Name}'.");
+
+        _userRoles.Remove(userRole);
+    }
+
+    public bool HasRole(string roleName) => _userRoles.Any(ur => ur.Role.Name == roleName);
 }

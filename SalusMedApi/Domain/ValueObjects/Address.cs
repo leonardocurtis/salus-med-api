@@ -5,12 +5,12 @@ namespace SalusMedApi.Domain.ValueObjects;
 
 public sealed record Address
 {
-    public string Street { get; private init; } = null!;
-    public string Number { get; private init; } = null!;
-    public string Neighborhood { get; private init; } = null!;
+    public string Street { get; private init; } = string.Empty;
+    public string Number { get; private init; } = string.Empty;
+    public string Neighborhood { get; private init; } = string.Empty;
     public PostalCode PostalCode { get; private init; } = null!;
     public string? Complement { get; private init; }
-    public string City { get; private init; } = null!;
+    public string City { get; private init; } = string.Empty;
     public BrazilianState State { get; private init; }
 
     private Address() { }
