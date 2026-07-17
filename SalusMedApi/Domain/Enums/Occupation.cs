@@ -1,12 +1,15 @@
 namespace SalusMedApi.Domain.Enums;
 
-public enum EmployeeRole
+public enum Occupation
 {
     Physician,
     Nurse,
     Receptionist,
-    Administrator,
-    Coordinator,
     LabTechnician,
     Pharmacist,
+    Biomedical,
+    Nutritionist,
+    Physiotherapist,
+    Coordinator,
+    Administrator,
 }
