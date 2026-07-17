@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SalusMedApi.Application.DTOs.Auth;
-using SalusMedApi.Application.Services.Interfaces;
+using SalusMedApi.Application.Interfaces.Services;
 using SalusMedApi.CrossCutting.Configuration;
 using SalusMedApi.Domain.Entities;
 

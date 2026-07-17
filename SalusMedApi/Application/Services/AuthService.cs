@@ -2,13 +2,14 @@ using SalusMedApi.Application.DTOs.Address;
 using SalusMedApi.Application.DTOs.Auth;
 using SalusMedApi.Application.DTOs.Patient;
 using SalusMedApi.Application.DTOs.Physician;
+using SalusMedApi.Application.Interfaces.Persistence;
+using SalusMedApi.Application.Interfaces.Security;
+using SalusMedApi.Application.Interfaces.Services;
 using SalusMedApi.Application.Mapper;
-using SalusMedApi.Application.Services.Interfaces;
 using SalusMedApi.CrossCutting.Exceptions;
 using SalusMedApi.Domain.Entities;
 using SalusMedApi.Domain.Enums;
 using SalusMedApi.Domain.ValueObjects;
-using SalusMedApi.Infrastructure.Repositories.Interfaces;
 
 namespace SalusMedApi.Application.Services;
 
@@ -20,6 +21,7 @@ public class AuthService : IAuthService
     private readonly IPatientRepository _patientRepository;
     private readonly IEmployeeRepository _employeeRepository;
     private readonly IDepartmentRepository _departmentRepository;
+    private readonly IPasswordHasher _passwordHasher;
 
     public AuthService(
         ITokenService tokenService,
@@ -27,7 +29,8 @@ public class AuthService : IAuthService
         IPhysicianRepository physicianRepository,
         IPatientRepository patientRepository,
         IEmployeeRepository employeeRepository,
-        IDepartmentRepository departmentRepository
+        IDepartmentRepository departmentRepository,
+        IPasswordHasher passwordHasher
     )
     {
         _tokenService = tokenService;
@@ -36,6 +39,7 @@ public class AuthService : IAuthService
         _patientRepository = patientRepository;
         _employeeRepository = employeeRepository;
         _departmentRepository = departmentRepository;
+        _passwordHasher = passwordHasher;
     }
 
     public async Task<RegisterPhysicianResponse> RegisterPhysicianAsync(
@@ -144,7 +148,7 @@ public class AuthService : IAuthService
         if (user.Status == AccountStatus.Deactivated)
             throw new ForbiddenException("Account is inactive.");
 
-        if (!BCrypt.Net.BCrypt.Verify(loginRequest.Password, user.PasswordHash))
+        if (!_passwordHasher.Verify(loginRequest.Password, user.PasswordHash))
             throw new UnauthorizedException("Invalid credentials.");
 
         var token = _tokenService.GenerateToken(user);
