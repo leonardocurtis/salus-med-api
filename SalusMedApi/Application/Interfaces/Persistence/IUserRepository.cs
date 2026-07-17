@@ -1,7 +1,7 @@
 using SalusMedApi.Domain.Entities;
 using SalusMedApi.Domain.ValueObjects;
 
-namespace SalusMedApi.Infrastructure.Repositories.Interfaces;
+namespace SalusMedApi.Application.Interfaces.Persistence;
 
 public interface IUserRepository
 {

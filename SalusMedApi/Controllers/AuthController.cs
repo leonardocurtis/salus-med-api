@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SalusMedApi.Application.DTOs.Auth;
 using SalusMedApi.Application.DTOs.Patient;
 using SalusMedApi.Application.DTOs.Physician;
-using SalusMedApi.Application.Services.Interfaces;
+using SalusMedApi.Application.Interfaces.Services;
 using LoginRequest = SalusMedApi.Application.DTOs.Auth.LoginRequest;
 
 namespace SalusMedApi.Controllers;

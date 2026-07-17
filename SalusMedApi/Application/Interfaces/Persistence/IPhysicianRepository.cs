@@ -1,6 +1,6 @@
 using SalusMedApi.Domain.Entities;
 
-namespace SalusMedApi.Infrastructure.Repositories.Interfaces;
+namespace SalusMedApi.Application.Interfaces.Persistence;
 
 public interface IPhysicianRepository
 {

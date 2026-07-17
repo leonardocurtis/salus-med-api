@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using SalusMedApi.Application.Interfaces.Persistence;
 using SalusMedApi.Domain.ValueObjects;
 using SalusMedApi.Infrastructure.Persistence;
-using SalusMedApi.Infrastructure.Repositories.Interfaces;
 
 namespace SalusMedApi.Infrastructure.Repositories;
 

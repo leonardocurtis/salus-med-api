@@ -1,27 +1,50 @@
+using SalusMedApi.Application.Interfaces.Persistence;
+using SalusMedApi.Application.Interfaces.Security;
+using SalusMedApi.Application.Interfaces.Services;
 using SalusMedApi.Application.Services;
-using SalusMedApi.Application.Services.Interfaces;
 using SalusMedApi.Infrastructure.Repositories;
-using SalusMedApi.Infrastructure.Repositories.Interfaces;
+using SalusMedApi.Infrastructure.Security;
 
 namespace SalusMedApi.CrossCutting.Extensions;
 
 public static class DependencyInjectionExtensions
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+    extension(IServiceCollection services)
     {
-        //services.AddScoped<IPdfService, AppointmentPdfService>();
-        services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<ITokenService, TokenService>();
-        return services;
-    }
+        public IServiceCollection AddApplication()
+        {
+            services.AddApplicationServices();
 
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
-    {
-        services.AddScoped<IDepartmentRepository, DepartmentRepository>();
-        services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-        services.AddScoped<IPatientRepository, PatientRepository>();
-        services.AddScoped<IPhysicianRepository, PhysicianRepository>();
-        services.AddScoped<IUserRepository, UserRepository>();
-        return services;
+            return services;
+        }
+
+        public IServiceCollection AddInfrastructure()
+        {
+            services.AddRepositories();
+            services.AddSecurity();
+
+            return services;
+        }
+
+        private void AddApplicationServices()
+        {
+            //services.AddScoped<IPdfService, AppointmentPdfService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ITokenService, TokenService>();
+        }
+
+        private void AddRepositories()
+        {
+            services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            services.AddScoped<IPatientRepository, PatientRepository>();
+            services.AddScoped<IPhysicianRepository, PhysicianRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+        }
+
+        private void AddSecurity()
+        {
+            services.AddScoped<IPasswordHasher, PasswordHasher>();
+        }
     }
 }

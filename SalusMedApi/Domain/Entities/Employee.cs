@@ -2,7 +2,6 @@ using SalusMedApi.CrossCutting.Exceptions;
 using SalusMedApi.Domain.Common;
 using SalusMedApi.Domain.Enums;
 using SalusMedApi.Domain.ValueObjects;
-using SalusMedApi.Infrastructure.Repositories.Interfaces;
 
 namespace SalusMedApi.Domain.Entities;
 
@@ -15,7 +14,7 @@ public class Employee : AuditableEntity
     public DateOnly DateOfBirth { get; private set; }
     public EmployeeStatus Status { get; private set; }
     public Address Address { get; private set; }
-    public EmployeeRole Role { get; private set; }
+    public Occupation Occupation { get; private set; }
 
     public long UserId { get; private set; }
     public User User { get; private set; }
@@ -40,7 +39,7 @@ public class Employee : AuditableEntity
         DateOnly dateOfBirth,
         Address address,
         User user,
-        EmployeeRole role,
+        Occupation occupation,
         Department department
     )
     {
@@ -67,7 +66,7 @@ public class Employee : AuditableEntity
             Address = address,
             User = user,
             UserId = user.Id,
-            Role = role,
+            Occupation = occupation,
             Department = department,
             DepartmentId = department.Id,
         };

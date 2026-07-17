@@ -2,7 +2,6 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using SalusMedApi.Domain.Common;
 using SalusMedApi.Domain.Entities;
-using SalusMedApi.Infrastructure.Repositories.Interfaces;
 
 namespace SalusMedApi.Infrastructure.Persistence;
 

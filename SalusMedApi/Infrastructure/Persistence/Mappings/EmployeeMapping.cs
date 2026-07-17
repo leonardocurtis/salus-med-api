@@ -27,7 +27,7 @@ public class EmployeeMapping : IEntityTypeConfiguration<Employee>
         builder.Property(e => e.Gender).HasConversion<string>().HasMaxLength(50).IsRequired();
         builder.Property(e => e.DateOfBirth).IsRequired();
         builder.Property(e => e.Status).IsRequired().HasMaxLength(50).HasConversion<string>();
-        builder.Property(e => e.Role).IsRequired().HasMaxLength(50).HasConversion<string>();
+        builder.Property(e => e.Occupation).IsRequired().HasMaxLength(50).HasConversion<string>();
 
         builder.HasIndex(e => e.PhoneNumber).IsUnique();
         builder.HasIndex(e => e.CpfNumber).IsUnique();

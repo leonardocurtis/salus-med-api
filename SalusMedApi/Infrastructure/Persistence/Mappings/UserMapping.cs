@@ -15,6 +15,7 @@ public class UserMapping : IEntityTypeConfiguration<User>
             .Property(u => u.EmailAddress)
             .HasConversion(e => e.Value, v => Email.Create(v))
             .IsRequired()
+            .HasColumnName("email")
             .HasMaxLength(100);
         builder.Property(u => u.PasswordHash).IsRequired().HasMaxLength(60);
         builder.Property(u => u.Status).IsRequired().HasMaxLength(50).HasConversion<string>();

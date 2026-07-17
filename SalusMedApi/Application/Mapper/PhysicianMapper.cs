@@ -23,7 +23,7 @@ public static class PhysicianMapper
             dateOfBirth: request.Physician.DateOfBirth!.Value,
             address: address,
             user: user,
-            role: EmployeeRole.Physician,
+            occupation: Occupation.Physician,
             department: department
         );
 

@@ -1,7 +1,7 @@
 using SalusMedApi.Application.DTOs.Auth;
 using SalusMedApi.Domain.Entities;
 
-namespace SalusMedApi.Application.Services.Interfaces;
+namespace SalusMedApi.Application.Interfaces.Services;
 
 public interface ITokenService
 {

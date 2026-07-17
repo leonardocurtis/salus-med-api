@@ -1,7 +1,6 @@
 using SalusMedApi.CrossCutting.Exceptions;
 using SalusMedApi.Domain.Common;
 using SalusMedApi.Domain.Enums;
-using SalusMedApi.Infrastructure.Repositories.Interfaces;
 
 namespace SalusMedApi.Domain.Entities;
 
