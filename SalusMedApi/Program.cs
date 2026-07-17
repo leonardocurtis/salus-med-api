@@ -1,8 +1,11 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.OpenApi;
+using SalusMedApi.Application.Interfaces.Security;
 using SalusMedApi.CrossCutting.ExceptionHandlers;
 using SalusMedApi.CrossCutting.Extensions;
+using SalusMedApi.Infrastructure.Persistence;
+using SalusMedApi.Infrastructure.Persistence.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +15,7 @@ builder
     .AddJwtAuthentication(builder.Configuration) // JWT
     .AddAuthorization()
     .AddApplication() // Services
-    .AddInfrastructure() // Repositories
+    .AddInfrastructure() // Repositories + Security
     .AddValidatorsFromAssemblyContaining<Program>() // FluentValidation
     .AddFluentValidationAutoValidation() // FluentValidation
     .AddExceptionHandler<ValidationExceptionHandler>() // Exception
@@ -24,6 +27,14 @@ builder
     });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
+
+    await DbSeeder.SeedAsync(context, passwordHasher);
+}
 
 app.UseExceptionHandler();
 
