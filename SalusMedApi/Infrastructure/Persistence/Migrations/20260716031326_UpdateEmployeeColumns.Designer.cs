@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SalusMedApi.Infrastructure.Persistence;
@@ -12,9 +13,11 @@ using SalusMedApi.Infrastructure.Persistence;
 namespace SalusMedApi.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260716031326_UpdateEmployeeColumns")]
+    partial class UpdateEmployeeColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -624,7 +627,7 @@ namespace SalusMedApi.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("email");
+                        .HasColumnName("email_address");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -647,7 +650,7 @@ namespace SalusMedApi.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("EmailAddress")
                         .IsUnique()
-                        .HasDatabaseName("ix_users_email");
+                        .HasDatabaseName("ix_users_email_address");
 
                     b.ToTable("users", (string)null);
                 });
