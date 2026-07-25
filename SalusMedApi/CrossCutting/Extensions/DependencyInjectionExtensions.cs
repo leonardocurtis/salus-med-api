@@ -1,7 +1,9 @@
+using SalusMedApi.Application.DTOs.Physician;
 using SalusMedApi.Application.Interfaces.Persistence;
 using SalusMedApi.Application.Interfaces.Security;
 using SalusMedApi.Application.Interfaces.Services;
 using SalusMedApi.Application.Services;
+using SalusMedApi.Infrastructure.Generators;
 using SalusMedApi.Infrastructure.Repositories;
 using SalusMedApi.Infrastructure.Security;
 
@@ -22,6 +24,7 @@ public static class DependencyInjectionExtensions
         {
             services.AddRepositories();
             services.AddSecurity();
+            services.AddGenerators();
 
             return services;
         }
@@ -31,6 +34,12 @@ public static class DependencyInjectionExtensions
             //services.AddScoped<IPdfService, AppointmentPdfService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<
+                IRegistrationService<RegisterPhysicianRequest, RegisterPhysicianResponse>,
+                PhysicianService
+            >();
+            services.AddScoped<IPatientService, PatientService>();
+            services.AddScoped<IEmployeeService, EmployeeService>();
         }
 
         private void AddRepositories()
@@ -40,11 +49,18 @@ public static class DependencyInjectionExtensions
             services.AddScoped<IPatientRepository, PatientRepository>();
             services.AddScoped<IPhysicianRepository, PhysicianRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWorkRepository>();
         }
 
         private void AddSecurity()
         {
             services.AddScoped<IPasswordHasher, PasswordHasher>();
+        }
+
+        private void AddGenerators()
+        {
+            services.AddScoped<IEmployeeNumberGenerator, EmployeeNumberGenerator>();
         }
     }
 }

@@ -40,6 +40,7 @@ public static class AuthExtensions
                         Encoding.UTF8.GetBytes(jwtSettings.SecretKey)
                     ),
                     ClockSkew = TimeSpan.FromSeconds(30),
+                    RoleClaimType = "role",
                 };
             });
 
