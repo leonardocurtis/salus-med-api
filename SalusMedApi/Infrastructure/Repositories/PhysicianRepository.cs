@@ -6,26 +6,10 @@ using SalusMedApi.Infrastructure.Persistence;
 
 namespace SalusMedApi.Infrastructure.Repositories;
 
-public class PhysicianRepository : IPhysicianRepository
+public class PhysicianRepository(AppDbContext context) : IPhysicianRepository
 {
-    private readonly AppDbContext _context;
+    public void Add(Physician physician) => context.Physicians.Add(physician);
 
-    public PhysicianRepository(AppDbContext context)
-    {
-        _context = context;
-    }
-
-    public async Task<Physician> SaveAsync(Physician physician)
-    {
-        _context.Physicians.Add(physician);
-        await _context.SaveChangesAsync();
-        return physician;
-    }
-
-    public async Task<bool> MedicalRegistrationExistsAsync(string medicalRegistration)
-    {
-        var crmVo = Crm.Create(medicalRegistration);
-
-        return await _context.Physicians.AnyAsync(p => p.MedicalRegistration == crmVo);
-    }
+    public async Task<bool> MedicalRegistrationExistsAsync(Crm crm) =>
+        await context.Physicians.AnyAsync(p => p.MedicalRegistration == crm);
 }

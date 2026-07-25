@@ -6,26 +6,10 @@ using SalusMedApi.Infrastructure.Persistence;
 
 namespace SalusMedApi.Infrastructure.Repositories;
 
-public class PatientRepository : IPatientRepository
+public class PatientRepository(AppDbContext context) : IPatientRepository
 {
-    private readonly AppDbContext _context;
+    public async Task<bool> CpfExistsAsync(Cpf cpf) =>
+        await context.Patients.AnyAsync(x => x.CpfCode == cpf);
 
-    public PatientRepository(AppDbContext context)
-    {
-        _context = context;
-    }
-
-    public async Task<bool> CpfExistsAsync(string cpf)
-    {
-        var cpfVo = Cpf.Create(cpf);
-
-        return await _context.Patients.AnyAsync(x => x.CpfCode == cpfVo);
-    }
-
-    public async Task<Patient> SaveAsync(Patient patient)
-    {
-        _context.Patients.Add(patient);
-        await _context.SaveChangesAsync();
-        return patient;
-    }
+    public void Add(Patient patient) => context.Patients.Add(patient);
 }

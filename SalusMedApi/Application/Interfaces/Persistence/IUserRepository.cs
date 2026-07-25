@@ -5,6 +5,7 @@ namespace SalusMedApi.Application.Interfaces.Persistence;
 
 public interface IUserRepository
 {
-    Task<User?> GetUserByEmailAsync(Email email);
-    Task<bool> EmailExistAsync(Email email);
+    void Add(User user);
+
+    Task<User?> GetUserByUsernameAsync(string username);
 }

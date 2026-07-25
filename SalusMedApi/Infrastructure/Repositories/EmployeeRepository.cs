@@ -1,23 +1,26 @@
 using Microsoft.EntityFrameworkCore;
 using SalusMedApi.Application.Interfaces.Persistence;
+using SalusMedApi.Domain.Entities;
 using SalusMedApi.Domain.ValueObjects;
 using SalusMedApi.Infrastructure.Persistence;
 
 namespace SalusMedApi.Infrastructure.Repositories;
 
-public class EmployeeRepository : IEmployeeRepository
+public class EmployeeRepository(AppDbContext context) : IEmployeeRepository
 {
-    private readonly AppDbContext _context;
+    public void Add(Employee employee) => context.Employees.Add(employee);
 
-    public EmployeeRepository(AppDbContext context)
-    {
-        _context = context;
-    }
+    public async Task<bool> CpfExistsAsync(Cpf cpf) =>
+        await context.Employees.AnyAsync(x => x.CpfNumber == cpf);
 
-    public async Task<bool> CpfExistsAsync(string cpf)
-    {
-        var cpfVo = Cpf.Create(cpf);
+    public async Task<bool> EmailExistsAsync(Email email) =>
+        await context.Employees.AnyAsync(x => x.EmailAddress == email);
 
-        return await _context.Employees.AnyAsync(x => x.CpfNumber == cpfVo);
-    }
+    public async Task<bool> PhoneExistsAsync(Phone phone) =>
+        await context.Employees.AnyAsync(x => x.PhoneNumber == phone);
+
+    public async Task<Employee?> GetEmployeeByEmployeeNumberAsync(string employeeId) =>
+        await context
+            .Employees.Include(e => e.User)
+            .FirstOrDefaultAsync(x => x.EmployeeNumber == employeeId);
 }

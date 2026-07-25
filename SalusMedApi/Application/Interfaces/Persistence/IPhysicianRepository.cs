@@ -1,9 +1,10 @@
 using SalusMedApi.Domain.Entities;
+using SalusMedApi.Domain.ValueObjects;
 
 namespace SalusMedApi.Application.Interfaces.Persistence;
 
 public interface IPhysicianRepository
 {
-    Task<Physician> SaveAsync(Physician physician);
-    Task<bool> MedicalRegistrationExistsAsync(string medicalRegistration);
+    void Add(Physician physician);
+    Task<bool> MedicalRegistrationExistsAsync(Crm medicalRegistration);
 }

@@ -5,8 +5,8 @@ using SalusMedApi.Infrastructure.Persistence;
 
 namespace SalusMedApi.Infrastructure.Repositories;
 
-public class DepartmentRepository(AppDbContext context) : IDepartmentRepository
+public class RoleRepository(AppDbContext dbContext) : IRoleRepository
 {
-    public async Task<Department?> GetDepartmentByIdAsync(long id) =>
-        await context.Departments.FirstOrDefaultAsync(x => x.Id == id);
+    public async Task<Role?> GetByNameAsync(string name) =>
+        await dbContext.Roles.FirstOrDefaultAsync(role => role.Name == name);
 }

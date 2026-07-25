@@ -6,23 +6,15 @@ using SalusMedApi.Infrastructure.Persistence;
 
 namespace SalusMedApi.Infrastructure.Repositories;
 
-public class UserRepository : IUserRepository
+public class UserRepository(AppDbContext context) : IUserRepository
 {
-    private readonly AppDbContext _context;
+    public void Add(User user) => context.Users.Add(user);
 
-    public UserRepository(AppDbContext context)
+    public async Task<User?> GetUserByUsernameAsync(string username)
     {
-        _context = context;
-    }
-
-    public async Task<User?> GetUserByEmailAsync(Email email)
-    {
-        return await _context
+        return await context
             .Users.Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
-            .FirstOrDefaultAsync(x => x.EmailAddress == email);
+            .FirstOrDefaultAsync(x => x.Username == username);
     }
-
-    public async Task<bool> EmailExistAsync(Email email) =>
-        await _context.Users.AnyAsync(x => x.EmailAddress == email);
 }
