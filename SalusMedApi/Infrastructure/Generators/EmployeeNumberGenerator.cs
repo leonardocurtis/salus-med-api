@@ -1,23 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using SalusMedApi.Application.Interfaces.Services;
-using SalusMedApi.CrossCutting.Extensions;
-using SalusMedApi.Domain.Enums;
 using SalusMedApi.Infrastructure.Persistence;
 
 namespace SalusMedApi.Infrastructure.Generators;
 
-public sealed class EmployeeNumberGenerator : IEmployeeNumberGenerator
+public sealed class EmployeeNumberGenerator(AppDbContext context) : IEmployeeNumberGenerator
 {
-    private readonly AppDbContext _context;
-
-    public EmployeeNumberGenerator(AppDbContext context)
-    {
-        _context = context;
-    }
-
     public async Task<string> GenerateAsync(CancellationToken cancellationToken = default)
     {
-        var nextValue = await _context
+        var nextValue = await context
             .Database.SqlQueryRaw<long>("SELECT nextval('employee_number_seq')")
             .FirstAsync(cancellationToken);
 

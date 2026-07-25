@@ -46,7 +46,7 @@ public class EmployeeMapping : AuditableEntityMapping<Employee>
         builder
             .HasIndex(e => e.EmployeeNumber)
             .IsUnique()
-            .HasDatabaseName("IX_Employees_EmployeeNumber");
+            .HasDatabaseName("ix_employees_employee_number");
         builder.HasIndex(e => e.EmployeeNumber).IsUnique();
         builder.HasIndex(e => e.PhoneNumber).IsUnique();
         builder.HasIndex(e => e.EmailAddress).IsUnique();

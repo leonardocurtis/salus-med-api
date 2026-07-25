@@ -40,7 +40,7 @@ public static class DbSeeder
         IPasswordHasher passwordHasher
     )
     {
-        const string username = "admin@salusmed.com";
+        const string username = "26070000000";
 
         var alreadyExists = await context.Users.AnyAsync(u => u.Username == username);
 
@@ -57,10 +57,9 @@ public static class DbSeeder
 
         var admin = User.Create(username, passwordHash);
 
-        context.Users.Add(admin);
-        await context.SaveChangesAsync();
-
         admin.AssignRole(adminRole);
+
+        context.Users.Add(admin);
         await context.SaveChangesAsync();
     }
 }
