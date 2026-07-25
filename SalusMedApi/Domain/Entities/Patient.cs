@@ -11,14 +11,15 @@ public class Patient : AuditableEntity
     public string MotherName { get; private set; }
     public string? FatherName { get; private set; }
     public Phone PhoneNumber { get; private set; }
+    public Email EmailAddress { get; private set; }
     public Cpf CpfCode { get; private set; }
     public Gender Gender { get; private set; }
     public DateOnly DateOfBirth { get; private set; }
     public Address Address { get; private set; }
     public PatientStatus Status { get; private set; }
 
-    public long UserId { get; private set; }
-    public User User { get; private set; }
+    public long? UserId { get; private set; }
+    public User? User { get; private set; }
 
     private Patient() { }
 
@@ -27,11 +28,11 @@ public class Patient : AuditableEntity
         string motherName,
         string? fatherName,
         string phone,
+        string email,
         string cpf,
         Gender gender,
         DateOnly dateOfBirth,
-        Address address,
-        User user
+        Address address
     )
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -49,16 +50,18 @@ public class Patient : AuditableEntity
             MotherName = motherName.Trim(),
             FatherName = string.IsNullOrWhiteSpace(fatherName) ? null : fatherName.Trim(),
             PhoneNumber = Phone.Create(phone),
+            EmailAddress = Email.Create(email),
             CpfCode = Cpf.Create(cpf),
             Gender = gender,
             DateOfBirth = dateOfBirth,
             Status = PatientStatus.Active,
             Address = address,
-            User = user,
         };
     }
 
     public void UpdateContact(string phone) => PhoneNumber = Phone.Create(phone);
+
+    public void UpdateEmail(string email) => EmailAddress = Email.Create(email);
 
     public void UpdateAddress(Address address)
     {
@@ -97,5 +100,14 @@ public class Patient : AuditableEntity
             throw new DomainException("Patient is already registered as deceased.");
 
         Status = PatientStatus.Deceased;
+    }
+
+    private void AssignCredentials(User user)
+    {
+        if (User is not null)
+            throw new DomainException("Patient already has credentials.");
+
+        User = user ?? throw new DomainException("Patient must be linked to a User.");
+        UserId = user.Id;
     }
 }

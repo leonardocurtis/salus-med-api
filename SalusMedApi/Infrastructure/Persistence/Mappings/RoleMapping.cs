@@ -4,10 +4,12 @@ using SalusMedApi.Domain.Entities;
 
 namespace SalusMedApi.Infrastructure.Persistence.Mappings;
 
-public class RoleMapping : IEntityTypeConfiguration<Role>
+public class RoleMapping : EntityMapping<Role>
 {
-    public void Configure(EntityTypeBuilder<Role> builder)
+    public override void Configure(EntityTypeBuilder<Role> builder)
     {
+        base.Configure(builder);
+
         builder.ToTable("roles");
 
         builder.Property(r => r.Name).IsRequired().HasMaxLength(50);

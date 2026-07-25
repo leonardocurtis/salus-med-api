@@ -5,4 +5,5 @@ public enum EmployeeStatus
     Active,
     OnLeave,
     Terminated,
+    Vacation,
 }

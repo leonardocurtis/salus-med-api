@@ -7,7 +7,7 @@ namespace SalusMedApi.Domain.Entities;
 
 public class User : AuditableEntity
 {
-    public Email EmailAddress { get; private set; } = null!;
+    public string Username { get; private set; } = string.Empty;
     public string PasswordHash { get; private set; } = string.Empty;
     public AccountStatus Status { get; private set; }
 
@@ -18,14 +18,14 @@ public class User : AuditableEntity
 
     private User() { }
 
-    public static User Create(string email, string passwordHash)
+    public static User Create(string username, string passwordHash)
     {
         if (string.IsNullOrWhiteSpace(passwordHash))
             throw new DomainException("Password hash cannot be empty.");
 
         return new User
         {
-            EmailAddress = Email.Create(email),
+            Username = username,
             PasswordHash = passwordHash,
             Status = AccountStatus.Active,
         };
@@ -55,22 +55,12 @@ public class User : AuditableEntity
         PasswordHash = newPasswordHash;
     }
 
-    public void ChangeEmail(string newEmail)
-    {
-        var email = Email.Create(newEmail);
-
-        if (email.Equals(EmailAddress))
-            throw new DomainException("The new email must be different from the current one.");
-
-        EmailAddress = email;
-    }
-
     public void AssignRole(Role role)
     {
         if (_userRoles.Any(ur => ur.RoleId == role.Id))
             return;
 
-        _userRoles.Add(new UserRole(Id, role.Id));
+        _userRoles.Add(new UserRole(this, role));
     }
 
     public void RemoveRole(Role role)

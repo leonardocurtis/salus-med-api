@@ -4,10 +4,12 @@ using SalusMedApi.Domain.Entities;
 
 namespace SalusMedApi.Infrastructure.Persistence.Mappings;
 
-public class PhysicianMappings : IEntityTypeConfiguration<Physician>
+public class PhysicianMappings : AuditableEntityMapping<Physician>
 {
-    public void Configure(EntityTypeBuilder<Physician> builder)
+    public override void Configure(EntityTypeBuilder<Physician> builder)
     {
+        base.Configure(builder);
+
         builder.ToTable("physicians");
 
         builder.ComplexProperty(

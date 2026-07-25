@@ -1,14 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SalusMedApi.Domain.Entities;
+using SalusMedApi.Domain.ValueObjects;
 using SalusMedApi.Infrastructure.Persistence.Converters;
 
 namespace SalusMedApi.Infrastructure.Persistence.Mappings;
 
-public class PatientMapping : IEntityTypeConfiguration<Patient>
+public class PatientMapping : AuditableEntityMapping<Patient>
 {
-    public void Configure(EntityTypeBuilder<Patient> builder)
+    public override void Configure(EntityTypeBuilder<Patient> builder)
     {
+        base.Configure(builder);
+
         builder.ToTable("patients");
 
         builder.Property(p => p.Name).HasMaxLength(100).IsRequired();
@@ -20,6 +23,12 @@ public class PatientMapping : IEntityTypeConfiguration<Patient>
             .HasMaxLength(20)
             .HasColumnName("phone")
             .IsRequired();
+        builder
+            .Property(u => u.EmailAddress)
+            .HasConversion(new EmailConverter())
+            .IsRequired()
+            .HasColumnName("email")
+            .HasMaxLength(100);
         builder
             .Property(p => p.CpfCode)
             .HasConversion(new CpfConverter())
@@ -40,7 +49,7 @@ public class PatientMapping : IEntityTypeConfiguration<Patient>
             .HasOne(p => p.User)
             .WithOne()
             .HasForeignKey<Patient>(p => p.UserId)
-            .IsRequired()
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

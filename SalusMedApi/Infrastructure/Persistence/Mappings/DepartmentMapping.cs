@@ -4,10 +4,12 @@ using SalusMedApi.Domain.Entities;
 
 namespace SalusMedApi.Infrastructure.Persistence.Mappings;
 
-public class DepartmentMapping : IEntityTypeConfiguration<Department>
+public class DepartmentMapping : AuditableEntityMapping<Department>
 {
-    public void Configure(EntityTypeBuilder<Department> builder)
+    public override void Configure(EntityTypeBuilder<Department> builder)
     {
+        base.Configure(builder);
+
         builder.ToTable("departments");
 
         builder.Property(d => d.Name).IsRequired().HasMaxLength(100);

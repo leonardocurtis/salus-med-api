@@ -6,10 +6,12 @@ using SalusMedApi.Infrastructure.Persistence.Converters;
 
 namespace SalusMedApi.Infrastructure.Persistence.Mappings;
 
-public class HealthUnitMapping : IEntityTypeConfiguration<HealthUnit>
+public class HealthUnitMapping : AuditableEntityMapping<HealthUnit>
 {
-    public void Configure(EntityTypeBuilder<HealthUnit> builder)
+    public override void Configure(EntityTypeBuilder<HealthUnit> builder)
     {
+        base.Configure(builder);
+
         builder.ToTable("health_units");
 
         builder

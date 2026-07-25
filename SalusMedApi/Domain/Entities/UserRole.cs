@@ -12,9 +12,9 @@ public class UserRole
 
     private UserRole() { }
 
-    public UserRole(long userId, long roleId)
+    public UserRole(User user, Role role)
     {
-        UserId = userId;
-        RoleId = roleId;
+        User = user;
+        Role = role;
     }
 }

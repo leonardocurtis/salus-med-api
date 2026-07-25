@@ -5,10 +5,12 @@ using SalusMedApi.Infrastructure.Persistence.Converters;
 
 namespace SalusMedApi.Infrastructure.Persistence.Mappings;
 
-public class ClinicMapping : IEntityTypeConfiguration<Clinic>
+public class ClinicMapping : AuditableEntityMapping<Clinic>
 {
-    public void Configure(EntityTypeBuilder<Clinic> builder)
+    public override void Configure(EntityTypeBuilder<Clinic> builder)
     {
+        base.Configure(builder);
+
         builder.ToTable("clinics");
 
         builder.Property(c => c.CorporateName).IsRequired().HasMaxLength(200);

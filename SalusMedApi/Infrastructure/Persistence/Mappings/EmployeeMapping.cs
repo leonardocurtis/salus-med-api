@@ -5,12 +5,20 @@ using SalusMedApi.Infrastructure.Persistence.Converters;
 
 namespace SalusMedApi.Infrastructure.Persistence.Mappings;
 
-public class EmployeeMapping : IEntityTypeConfiguration<Employee>
+public class EmployeeMapping : AuditableEntityMapping<Employee>
 {
-    public void Configure(EntityTypeBuilder<Employee> builder)
+    public override void Configure(EntityTypeBuilder<Employee> builder)
     {
+        base.Configure(builder);
+
         builder.ToTable("employees");
 
+        builder
+            .Property(e => e.EmployeeNumber)
+            .IsRequired()
+            .HasMaxLength(11)
+            .IsFixedLength()
+            .HasColumnType("char(11)");
         builder.Property(e => e.Name).HasMaxLength(100).IsRequired();
         builder
             .Property(e => e.PhoneNumber)
@@ -18,6 +26,12 @@ public class EmployeeMapping : IEntityTypeConfiguration<Employee>
             .HasMaxLength(20)
             .HasColumnName("phone")
             .IsRequired();
+        builder
+            .Property(u => u.EmailAddress)
+            .HasConversion(new EmailConverter())
+            .IsRequired()
+            .HasColumnName("email")
+            .HasMaxLength(100);
         builder
             .Property(e => e.CpfNumber)
             .HasConversion(new CpfConverter())
@@ -29,7 +43,13 @@ public class EmployeeMapping : IEntityTypeConfiguration<Employee>
         builder.Property(e => e.Status).IsRequired().HasMaxLength(50).HasConversion<string>();
         builder.Property(e => e.Occupation).IsRequired().HasMaxLength(50).HasConversion<string>();
 
+        builder
+            .HasIndex(e => e.EmployeeNumber)
+            .IsUnique()
+            .HasDatabaseName("IX_Employees_EmployeeNumber");
+        builder.HasIndex(e => e.EmployeeNumber).IsUnique();
         builder.HasIndex(e => e.PhoneNumber).IsUnique();
+        builder.HasIndex(e => e.EmailAddress).IsUnique();
         builder.HasIndex(e => e.CpfNumber).IsUnique();
 
         builder.ConfigureAddress(e => e.Address);
@@ -38,7 +58,7 @@ public class EmployeeMapping : IEntityTypeConfiguration<Employee>
             .HasOne(e => e.User)
             .WithOne()
             .HasForeignKey<Employee>(e => e.UserId)
-            .IsRequired()
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder
