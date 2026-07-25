@@ -9,36 +9,47 @@ namespace SalusMedApi.Application.Mapper;
 
 public static class PhysicianMapper
 {
-    public static Physician ToEntity(RegisterPhysicianRequest request, Department department)
+    public static RegisterPhysicianResponse ToResponse(this Physician physician)
     {
-        var user = MapUser(request.Credentials);
+        return new RegisterPhysicianResponse(
+            physician.PublicId,
+            physician.Employee.EmployeeNumber,
+            physician.Employee.Name,
+            physician.MedicalRegistration.Formatted(),
+            physician.Specialty,
+            physician.Employee.Status,
+            physician.CreatedAt
+        );
+    }
 
-        var address = MapAddress(request.Physician.Address);
+    public static Physician ToEntity(
+        this RegisterPhysicianRequest request,
+        Department department,
+        string employeeNumber,
+        Occupation occupation
+    )
+    {
+        var address = MapAddress(request.Address);
 
         var employee = Employee.Create(
-            name: request.Physician.Name,
-            phone: request.Physician.Phone,
-            cpf: request.Physician.Cpf,
-            gender: request.Physician.Gender!.Value,
-            dateOfBirth: request.Physician.DateOfBirth!.Value,
+            employeeNumber: employeeNumber,
+            name: request.Name,
+            phone: request.Phone,
+            email: request.Email,
+            cpf: request.Cpf,
+            gender: request.Gender!.Value,
+            dateOfBirth: request.DateOfBirth!.Value,
             address: address,
-            user: user,
-            occupation: Occupation.Physician,
+            occupation: occupation,
             department: department
         );
 
         return Physician.Create(
-            medicalRegistration: request.Physician.MedicalRegistration,
-            specialty: request.Physician.Specialty!.Value,
+            medicalRegistration: request.Crm,
+            specialty: request.Specialty!.Value,
             employee: employee
         );
     }
-
-    private static User MapUser(CredentialRequest credentials) =>
-        User.Create(
-            email: credentials.Email,
-            passwordHash: BCrypt.Net.BCrypt.HashPassword(credentials.Password)
-        );
 
     private static Address MapAddress(AddressRequest address) =>
         Address.Create(

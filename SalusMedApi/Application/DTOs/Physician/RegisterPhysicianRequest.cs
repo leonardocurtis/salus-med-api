@@ -1,8 +1,17 @@
-using SalusMedApi.Application.DTOs.Auth;
+using SalusMedApi.Application.DTOs.Address;
+using SalusMedApi.Domain.Enums;
 
 namespace SalusMedApi.Application.DTOs.Physician;
 
 public record RegisterPhysicianRequest(
-    CredentialRequest Credentials,
-    CreatePhysicianRequest Physician
+    string Name,
+    string Phone,
+    string Email,
+    string Crm,
+    string Cpf,
+    Gender? Gender,
+    DateOnly? DateOfBirth,
+    Specialty? Specialty,
+    AddressRequest Address,
+    long DepartmentId
 );

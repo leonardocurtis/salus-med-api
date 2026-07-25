@@ -7,13 +7,13 @@ public class RegisterPhysicianRequestValidator : AbstractValidator<RegisterPhysi
 {
     public RegisterPhysicianRequestValidator()
     {
-        RuleFor(v => v.Physician.Name)
+        RuleFor(v => v.Name)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage("Name is required.")
             .MaximumLength(100)
             .WithMessage("Name must not exceed 100 characters.");
-        RuleFor(v => v.Physician.Phone)
+        RuleFor(v => v.Phone)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage("Phone is required.")
@@ -21,13 +21,19 @@ public class RegisterPhysicianRequestValidator : AbstractValidator<RegisterPhysi
             .WithMessage(
                 "Phone number must be a valid Brazilian mobile number (e.g., 11912345678)."
             );
-        RuleFor(v => v.Physician.MedicalRegistration)
+        RuleFor(v => v.Email)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .WithMessage("Medical registration is required.")
+            .WithMessage("Email is required.")
+            .EmailAddress()
+            .WithMessage("Email format is invalid.");
+        RuleFor(v => v.Crm)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty()
+            .WithMessage("CRM is required.")
             .Matches(@"^\d{4,6}$")
-            .WithMessage("Medical registration must contain 4 to 6 numeric digits.");
-        RuleFor(v => v.Physician.Cpf)
+            .WithMessage("CRM must contain 4 to 6 numeric digits.");
+        RuleFor(v => v.Cpf)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage("CPF is required.")
@@ -35,19 +41,19 @@ public class RegisterPhysicianRequestValidator : AbstractValidator<RegisterPhysi
             .WithMessage("CPF must contain exactly 11 numeric digits.")
             .Must(BeAValidCpf)
             .WithMessage("Invalid CPF.");
-        RuleFor(v => v.Physician.Gender)
+        RuleFor(v => v.Gender)
             .Cascade(CascadeMode.Stop)
             .NotNull()
             .WithMessage("Gender is required.")
             .IsInEnum()
             .WithMessage("Gender value is invalid.");
-        RuleFor(v => v.Physician.Specialty)
+        RuleFor(v => v.Specialty)
             .Cascade(CascadeMode.Stop)
             .NotNull()
             .WithMessage("Specialty is required.")
             .IsInEnum()
             .WithMessage("Specialty value is invalid.");
-        RuleFor(v => v.Physician.DateOfBirth)
+        RuleFor(v => v.DateOfBirth)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage("Date of birth is required.")
@@ -57,13 +63,15 @@ public class RegisterPhysicianRequestValidator : AbstractValidator<RegisterPhysi
             .WithMessage("Date of birth is not within a valid range.")
             .Must(BeAtLeast18YearsOld)
             .WithMessage("The physician must be at least 18 years old.");
+        RuleFor(v => v.DepartmentId)
+            .Cascade(CascadeMode.Stop)
+            .GreaterThan(0)
+            .WithMessage("Department Id must be a valid number.");
 
-        RuleFor(v => v.Physician.Address).NotNull().SetValidator(new AddressRequestValidator());
-
-        RuleFor(v => v.Credentials).NotNull().SetValidator(new CredentialRequestValidator());
+        RuleFor(v => v.Address).NotNull().SetValidator(new AddressRequestValidator());
     }
 
-    private bool BeAtLeast18YearsOld(DateOnly? dateOfBirth)
+    private static bool BeAtLeast18YearsOld(DateOnly? dateOfBirth)
     {
         if (dateOfBirth is null)
             return false;
@@ -79,7 +87,7 @@ public class RegisterPhysicianRequestValidator : AbstractValidator<RegisterPhysi
         return age >= 18;
     }
 
-    private bool BeAValidCpf(string cpf)
+    private static bool BeAValidCpf(string cpf)
     {
         cpf = new string(cpf.Where(char.IsDigit).ToArray());
 
@@ -92,7 +100,7 @@ public class RegisterPhysicianRequestValidator : AbstractValidator<RegisterPhysi
         return cpf[9] - '0' == digit1 && cpf[10] - '0' == digit2;
     }
 
-    private int CalculateDigit(string cpf, int length)
+    private static int CalculateDigit(string cpf, int length)
     {
         int[] multipliers =
             length == 9 ? [10, 9, 8, 7, 6, 5, 4, 3, 2] : [11, 10, 9, 8, 7, 6, 5, 4, 3, 2];

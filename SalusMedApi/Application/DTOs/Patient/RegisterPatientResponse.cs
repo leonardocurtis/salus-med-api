@@ -4,14 +4,10 @@ using SalusMedApi.Domain.Enums;
 namespace SalusMedApi.Application.DTOs.Patient;
 
 public record RegisterPatientResponse(
-    long PatientId,
+    long Id,
     string Name,
     string MotherName,
-    string Phone,
     string Cpf,
-    Gender Gender,
-    DateOnly DateOfBirth,
-    AddressResponse Address,
     PatientStatus Status,
     DateTimeOffset CreatedAt
 );

@@ -4,15 +4,11 @@ using SalusMedApi.Domain.Enums;
 namespace SalusMedApi.Application.DTOs.Physician;
 
 public record RegisterPhysicianResponse(
-    long PhysicianId,
+    Guid Id,
+    string EmployeeNumber,
     string Name,
-    string Phone,
-    string MedicalRegistration,
-    string Cpf,
-    Gender Gender,
-    DateOnly DateOfBirth,
+    string Crm,
     Specialty Specialty,
-    AddressResponse Address,
     EmployeeStatus Status,
     DateTimeOffset CreatedAt
 );

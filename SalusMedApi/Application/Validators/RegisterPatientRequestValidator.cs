@@ -7,24 +7,24 @@ public class RegisterPatientRequestValidator : AbstractValidator<RegisterPatient
 {
     public RegisterPatientRequestValidator()
     {
-        RuleFor(v => v.Patient.Name)
+        RuleFor(v => v.Name)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage("Name is required.")
             .MaximumLength(100)
             .WithMessage("Name must not exceed 100 characters.");
-        RuleFor(v => v.Patient.MotherName)
+        RuleFor(v => v.MotherName)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage("Mother name is required.")
             .MaximumLength(100)
             .WithMessage("Mother name must not exceed 100 characters.");
-        RuleFor(v => v.Patient.FatherName)
+        RuleFor(v => v.FatherName)
             .MaximumLength(100)
             .WithMessage("Father name must not exceed 100 characters.")
             .Must(v => v is null || !string.IsNullOrWhiteSpace(v))
             .WithMessage("Father name cannot be empty or whitespace.");
-        RuleFor(v => v.Patient.Phone)
+        RuleFor(v => v.Phone)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage("Phone is required.")
@@ -32,7 +32,13 @@ public class RegisterPatientRequestValidator : AbstractValidator<RegisterPatient
             .WithMessage(
                 "Phone number must be a valid Brazilian mobile number (e.g., 11912345678)."
             );
-        RuleFor(v => v.Patient.Cpf)
+        RuleFor(v => v.Email)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty()
+            .WithMessage("Email is required.")
+            .EmailAddress()
+            .WithMessage("Email format is invalid.");
+        RuleFor(v => v.Cpf)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage("CPF is required.")
@@ -40,13 +46,13 @@ public class RegisterPatientRequestValidator : AbstractValidator<RegisterPatient
             .WithMessage("CPF must contain exactly 11 numeric digits.")
             .Must(BeAValidCpf)
             .WithMessage("Invalid CPF.");
-        RuleFor(v => v.Patient.Gender)
+        RuleFor(v => v.Gender)
             .Cascade(CascadeMode.Stop)
             .NotNull()
             .WithMessage("Gender is required.")
             .IsInEnum()
             .WithMessage("Gender value is invalid.");
-        RuleFor(v => v.Patient.DateOfBirth)
+        RuleFor(v => v.DateOfBirth)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage("Date of birth is required.")
@@ -55,9 +61,7 @@ public class RegisterPatientRequestValidator : AbstractValidator<RegisterPatient
             .GreaterThan(DateOnly.FromDateTime(DateTime.Today.AddYears(-120)))
             .WithMessage("Date of birth is not within a valid range.");
 
-        RuleFor(v => v.Patient.Address).NotNull().SetValidator(new AddressRequestValidator());
-
-        RuleFor(v => v.Credentials).NotNull().SetValidator(new CredentialRequestValidator());
+        RuleFor(v => v.Address).NotNull().SetValidator(new AddressRequestValidator());
     }
 
     private bool BeAValidCpf(string cpf)

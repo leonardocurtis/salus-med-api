@@ -7,12 +7,12 @@ public class LoginRequestValidator : AbstractValidator<LoginRequest>
 {
     public LoginRequestValidator()
     {
-        RuleFor(x => x.Email)
+        RuleFor(x => x.Username)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .WithMessage("Email is required.")
-            .EmailAddress()
-            .WithMessage("Invalid email format.");
+            .WithMessage("Username is required.")
+            .Matches(@"^\d{11}$")
+            .WithMessage("Username must contain only numeric digits.");
         RuleFor(x => x.Password)
             .NotEmpty()
             .WithMessage("Password is required.")
