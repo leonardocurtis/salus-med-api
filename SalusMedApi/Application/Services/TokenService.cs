@@ -10,14 +10,9 @@ using SalusMedApi.Domain.Entities;
 
 namespace SalusMedApi.Application.Services;
 
-public class TokenService : ITokenService
+public sealed class TokenService(IOptions<JwtSettings> jwtSettings) : ITokenService
 {
-    private readonly JwtSettings _jwtSettings;
-
-    public TokenService(IOptions<JwtSettings> jwtSettings)
-    {
-        _jwtSettings = jwtSettings.Value;
-    }
+    private readonly JwtSettings _jwtSettings = jwtSettings.Value;
 
     public TokenResult GenerateToken(User user)
     {
@@ -27,12 +22,12 @@ public class TokenService : ITokenService
 
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.EmailAddress.ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, user.PublicId.ToString()),
+            new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
 
-        claims.AddRange(user.RoleNames.Select(roleName => new Claim(ClaimTypes.Role, roleName)));
+        claims.AddRange(user.RoleNames.Select(roleName => new Claim("role", roleName)));
 
         var token = new JwtSecurityToken(
             issuer: _jwtSettings.Issuer,
