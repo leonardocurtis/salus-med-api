@@ -7,7 +7,7 @@ using SalusMedApi.Domain.ValueObjects;
 
 namespace SalusMedApi.Application.Services;
 
-public sealed class PatientService(IPatientRepository patientRepository, IUnitOfWork unitOfWork)
+public sealed class PatientService(IPatientRepository patientRepository, IUnitOfWorkRepository unitOfWork)
     : IPatientService
 {
     public async Task<RegisterPatientResponse> RegisterPatientAsync(

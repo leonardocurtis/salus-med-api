@@ -47,4 +47,6 @@ public sealed record Cnpj
 
     public string Formatted =>
         $"{Value[..2]}.{Value[2..5]}.{Value[5..8]}/{Value[8..12]}-{Value[12..]}";
+
+    public override string ToString() => Value;
 }

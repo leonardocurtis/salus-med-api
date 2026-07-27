@@ -13,7 +13,7 @@ public sealed class EmployeeService(
     IPasswordHasher passwordHasher,
     IRoleRepository roleRepository,
     IUserRepository userRepository,
-    IUnitOfWork unitOfWork
+    IUnitOfWorkRepository unitOfWork
 ) : IEmployeeService
 {
     public async Task CreateCredentialsAsync(

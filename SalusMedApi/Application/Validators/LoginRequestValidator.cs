@@ -14,6 +14,7 @@ public class LoginRequestValidator : AbstractValidator<LoginRequest>
             .Matches(@"^\d{11}$")
             .WithMessage("Username must contain only numeric digits.");
         RuleFor(x => x.Password)
+            .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage("Password is required.")
             .MinimumLength(8)

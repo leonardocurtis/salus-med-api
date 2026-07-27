@@ -54,5 +54,7 @@ public sealed record Cpf
         return remainder < 2 ? 0 : 11 - remainder;
     }
 
-    public string Formatted() => $"{Value[..3]}.{Value[3..6]}.{Value[6..9]}-{Value[9..]}";
+    public string Formatted => $"{Value[..3]}.{Value[3..6]}.{Value[6..9]}-{Value[9..]}";
+
+    public override string ToString() => Value;
 }

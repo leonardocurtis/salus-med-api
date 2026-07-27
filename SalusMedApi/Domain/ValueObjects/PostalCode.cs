@@ -26,5 +26,6 @@ public sealed record PostalCode
         return new PostalCode(trimmed.Replace("-", ""));
     }
 
-    public string Formatted() => Value.Length == 8 ? $"{Value[..5]}-{Value[5..]}" : Value;
+    public string Formatted => Value.Length == 8 ? $"{Value[..5]}-{Value[5..]}" : Value;
+    public override string ToString() => Value;
 }

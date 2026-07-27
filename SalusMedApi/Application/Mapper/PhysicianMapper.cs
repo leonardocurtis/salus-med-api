@@ -15,7 +15,7 @@ public static class PhysicianMapper
             physician.PublicId,
             physician.Employee.EmployeeNumber,
             physician.Employee.Name,
-            physician.MedicalRegistration.Formatted(),
+            physician.MedicalRegistration.Formatted,
             physician.Specialty,
             physician.Employee.Status,
             physician.CreatedAt

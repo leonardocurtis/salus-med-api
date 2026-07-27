@@ -15,7 +15,7 @@ public sealed class PhysicianService(
     IDepartmentRepository departmentRepository,
     IPhysicianRepository physicianRepository,
     IEmployeeNumberGenerator employeeNumberGenerator,
-    IUnitOfWork unitOfWork
+    IUnitOfWorkRepository unitOfWork
 )
     : EmployeeRegistrationServiceBase<
         RegisterPhysicianRequest,

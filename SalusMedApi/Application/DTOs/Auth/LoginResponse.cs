@@ -1,3 +1,3 @@
 namespace SalusMedApi.Application.DTOs.Auth;
 
-public record LoginResponse(long UserId, string Username, string Token, DateTime ExpiresAt);
+public record LoginResponse(Guid Id, string Username, string Token, DateTime ExpiresAt);

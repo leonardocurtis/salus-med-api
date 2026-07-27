@@ -1,6 +1,6 @@
 namespace SalusMedApi.Application.Interfaces.Persistence;
 
-public interface IUnitOfWork
+public interface IUnitOfWorkRepository
 {
     Task CommitAsync(CancellationToken cancellationToken = default);
 }

@@ -35,5 +35,6 @@ public sealed record Crm
         return new Crm(numberPart, state);
     }
 
-    public string Formatted() => $"{Number}/{State}";
+    public string Formatted => $"{Number}/{State}";
+    public override string ToString() => Formatted;
 }

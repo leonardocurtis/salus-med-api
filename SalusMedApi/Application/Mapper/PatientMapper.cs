@@ -13,7 +13,7 @@ public static class PatientMapper
             patient.Id,
             patient.Name,
             patient.MotherName,
-            patient.CpfCode.Formatted(),
+            patient.CpfCode.Formatted,
             patient.Status,
             patient.CreatedAt
         );

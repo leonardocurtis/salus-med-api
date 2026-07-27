@@ -40,6 +40,7 @@ public static class DependencyInjectionExtensions
             >();
             services.AddScoped<IPatientService, PatientService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
+            services.AddScoped<IClinicService, ClinicService>();
         }
 
         private void AddRepositories()
@@ -50,7 +51,8 @@ public static class DependencyInjectionExtensions
             services.AddScoped<IPhysicianRepository, PhysicianRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
-            services.AddScoped<IUnitOfWork, UnitOfWorkRepository>();
+            services.AddScoped<IUnitOfWorkRepository, UnitOfWorkRepository>();
+            services.AddScoped<IClinicRepository, ClinicRepository>();
         }
 
         private void AddSecurity()

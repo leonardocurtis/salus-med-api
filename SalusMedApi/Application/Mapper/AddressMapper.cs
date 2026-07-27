@@ -12,7 +12,7 @@ public static class AddressMapper
             address.Number,
             address.Complement,
             address.Neighborhood,
-            address.PostalCode.Formatted(),
+            address.PostalCode.Formatted,
             address.City,
             address.State
         );

@@ -27,6 +27,6 @@ public sealed class AuthService(
 
         var token = tokenService.GenerateToken(user);
 
-        return new LoginResponse(user.Id, user.Username, token.UserToken, token.ExpiresAt);
+        return new LoginResponse(user.PublicId, user.Username, token.UserToken, token.ExpiresAt);
     }
 }

@@ -37,6 +37,8 @@ public sealed record Phone
 
     public bool IsMobile => Value.Length == 11;
 
-    public string Formatted() =>
+    public string Formatted =>
         IsMobile ? $"({Ddd}) {Value[2..7]}-{Value[7..]}" : $"({Ddd}) {Value[2..6]}-{Value[6..]}";
+
+    public override string ToString() => Value;
 }
