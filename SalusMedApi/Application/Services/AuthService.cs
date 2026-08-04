@@ -1,8 +1,9 @@
 using SalusMedApi.Application.DTOs.Auth;
+using SalusMedApi.Application.Exceptions;
+using SalusMedApi.Application.Interfaces.Auth;
 using SalusMedApi.Application.Interfaces.Persistence;
 using SalusMedApi.Application.Interfaces.Security;
 using SalusMedApi.Application.Interfaces.Services;
-using SalusMedApi.CrossCutting.Exceptions;
 using SalusMedApi.Domain.Enums;
 
 namespace SalusMedApi.Application.Services;

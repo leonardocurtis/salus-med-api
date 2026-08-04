@@ -1,9 +1,9 @@
 using SalusMedApi.Application.DTOs.Physician;
+using SalusMedApi.Application.Exceptions;
 using SalusMedApi.Application.Interfaces.Persistence;
 using SalusMedApi.Application.Interfaces.Services;
 using SalusMedApi.Application.Mapper;
 using SalusMedApi.Application.Services.Base;
-using SalusMedApi.CrossCutting.Exceptions;
 using SalusMedApi.Domain.Entities;
 using SalusMedApi.Domain.Enums;
 using SalusMedApi.Domain.ValueObjects;

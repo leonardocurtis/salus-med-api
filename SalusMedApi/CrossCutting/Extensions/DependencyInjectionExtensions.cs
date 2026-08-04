@@ -1,4 +1,5 @@
 using SalusMedApi.Application.DTOs.Physician;
+using SalusMedApi.Application.Interfaces.Auth;
 using SalusMedApi.Application.Interfaces.Persistence;
 using SalusMedApi.Application.Interfaces.Security;
 using SalusMedApi.Application.Interfaces.Services;
@@ -6,6 +7,7 @@ using SalusMedApi.Application.Services;
 using SalusMedApi.Infrastructure.Generators;
 using SalusMedApi.Infrastructure.Repositories;
 using SalusMedApi.Infrastructure.Security;
+using SalusMedApi.Infrastructure.Security.Authentication;
 
 namespace SalusMedApi.CrossCutting.Extensions;
 
@@ -25,6 +27,7 @@ public static class DependencyInjectionExtensions
             services.AddRepositories();
             services.AddSecurity();
             services.AddGenerators();
+            services.AddCurrentUser();
 
             return services;
         }
@@ -63,6 +66,12 @@ public static class DependencyInjectionExtensions
         private void AddGenerators()
         {
             services.AddScoped<IEmployeeNumberGenerator, EmployeeNumberGenerator>();
+        }
+
+        private void AddCurrentUser()
+        {
+            services.AddHttpContextAccessor();
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
         }
     }
 }

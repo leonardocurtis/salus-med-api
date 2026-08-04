@@ -1,8 +1,8 @@
 using SalusMedApi.Application.DTOs.Employee;
+using SalusMedApi.Application.Exceptions;
 using SalusMedApi.Application.Interfaces.Persistence;
 using SalusMedApi.Application.Interfaces.Security;
 using SalusMedApi.Application.Interfaces.Services;
-using SalusMedApi.CrossCutting.Exceptions;
 using SalusMedApi.Domain.Constants;
 using SalusMedApi.Domain.Entities;
 

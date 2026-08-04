@@ -1,14 +1,16 @@
 using SalusMedApi.Application.DTOs.Patient;
+using SalusMedApi.Application.Exceptions;
 using SalusMedApi.Application.Interfaces.Persistence;
 using SalusMedApi.Application.Interfaces.Services;
 using SalusMedApi.Application.Mapper;
-using SalusMedApi.CrossCutting.Exceptions;
 using SalusMedApi.Domain.ValueObjects;
 
 namespace SalusMedApi.Application.Services;
 
-public sealed class PatientService(IPatientRepository patientRepository, IUnitOfWorkRepository unitOfWork)
-    : IPatientService
+public sealed class PatientService(
+    IPatientRepository patientRepository,
+    IUnitOfWorkRepository unitOfWork
+) : IPatientService
 {
     public async Task<RegisterPatientResponse> RegisterPatientAsync(
         RegisterPatientRequest patientRequest
