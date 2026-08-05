@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using SalusMedApi.CrossCutting.Exceptions;
+using SalusMedApi.Application.Exceptions;
 
 namespace SalusMedApi.CrossCutting.ExceptionHandlers;
 

@@ -5,11 +5,10 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SalusMedApi.Application.DTOs.Auth;
 using SalusMedApi.Application.Interfaces.Auth;
-using SalusMedApi.Application.Interfaces.Services;
 using SalusMedApi.CrossCutting.Configuration;
 using SalusMedApi.Domain.Entities;
 
-namespace SalusMedApi.Application.Services;
+namespace SalusMedApi.Infrastructure.Security.Authentication;
 
 public sealed class TokenService(IOptions<JwtSettings> jwtSettings) : ITokenService
 {

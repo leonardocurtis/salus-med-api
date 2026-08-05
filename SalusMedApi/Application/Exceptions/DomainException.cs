@@ -1,4 +1,4 @@
-namespace SalusMedApi.CrossCutting.Exceptions;
+namespace SalusMedApi.Application.Exceptions;
 
 public class DomainException : Exception
 {

@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using SalusMedApi.CrossCutting.Exceptions;
+using SalusMedApi.Application.Exceptions;
 
 namespace SalusMedApi.Domain.ValueObjects;
 
@@ -27,5 +27,6 @@ public sealed record PostalCode
     }
 
     public string Formatted => Value.Length == 8 ? $"{Value[..5]}-{Value[5..]}" : Value;
+
     public override string ToString() => Value;
 }

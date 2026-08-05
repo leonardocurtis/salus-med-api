@@ -1,4 +1,4 @@
-using SalusMedApi.CrossCutting.Exceptions;
+using SalusMedApi.Application.Exceptions;
 using SalusMedApi.Domain.Enums;
 
 namespace SalusMedApi.Domain.ValueObjects;
@@ -36,5 +36,6 @@ public sealed record Crm
     }
 
     public string Formatted => $"{Number}/{State}";
+
     public override string ToString() => Formatted;
 }
