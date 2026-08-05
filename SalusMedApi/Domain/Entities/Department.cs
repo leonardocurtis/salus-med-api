@@ -1,4 +1,4 @@
-using SalusMedApi.CrossCutting.Exceptions;
+using SalusMedApi.Application.Exceptions;
 using SalusMedApi.Domain.Common;
 using SalusMedApi.Domain.Enums;
 

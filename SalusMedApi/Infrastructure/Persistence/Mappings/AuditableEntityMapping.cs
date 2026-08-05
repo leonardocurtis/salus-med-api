@@ -13,5 +13,11 @@ public abstract class AuditableEntityMapping<TEntity> : EntityMapping<TEntity>
         builder.Property(e => e.PublicId).IsRequired().ValueGeneratedNever();
 
         builder.HasIndex(e => e.PublicId).IsUnique();
+
+        builder.Property(e => e.CreatedBy).IsRequired().HasMaxLength(11);
+
+        builder.Property(e => e.UpdatedBy).HasMaxLength(11);
+
+        builder.Property(e => e.DeletedBy).HasMaxLength(11);
     }
 }

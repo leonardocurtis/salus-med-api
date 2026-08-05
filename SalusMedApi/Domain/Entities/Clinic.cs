@@ -1,4 +1,4 @@
-using SalusMedApi.CrossCutting.Exceptions;
+using SalusMedApi.Application.Exceptions;
 using SalusMedApi.Domain.Common;
 using SalusMedApi.Domain.Enums;
 using SalusMedApi.Domain.ValueObjects;
@@ -35,6 +35,23 @@ public class Clinic : AuditableEntity
         };
     }
 
+    public void Update(string? corporateName, string? tradeName, string? cnpj)
+    {
+        if (corporateName is not null)
+        {
+            if (string.IsNullOrWhiteSpace(corporateName))
+                throw new DomainException("Corporate name cannot be empty.");
+
+            CorporateName = corporateName.Trim();
+        }
+
+        if (tradeName is not null)
+            TradeName = string.IsNullOrWhiteSpace(tradeName) ? null : tradeName.Trim();
+
+        if (cnpj is not null)
+            CnpjCode = Cnpj.Create(cnpj);
+    }
+
     private void ChangeStatus(ClinicStatus newStatus)
     {
         if (Status == newStatus)
@@ -44,13 +61,16 @@ public class Clinic : AuditableEntity
             throw new DomainException(
                 $"Invalid status transition: cannot move from '{Status}' to '{newStatus}'."
             );
-
-        Status = newStatus;
     }
 
     public void Activate() => ChangeStatus(ClinicStatus.Active);
 
-    public void Deactivate() => ChangeStatus(ClinicStatus.Deactivated);
+    public void Deactivate(string deletedBy)
+    {
+        ChangeStatus(ClinicStatus.Deactivated);
+        DeletedAt = DateTimeOffset.UtcNow;
+        DeletedBy = deletedBy;
+    }
 
     public void Suspend() => ChangeStatus(ClinicStatus.Suspended);
 }

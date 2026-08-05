@@ -1,5 +1,3 @@
-using SalusMedApi.CrossCutting.Exceptions;
-
 namespace SalusMedApi.Domain.Entities;
 
 public class UserRole
