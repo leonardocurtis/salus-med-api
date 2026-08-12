@@ -4,5 +4,12 @@ namespace SalusMedApi.Application.Interfaces.Persistence;
 
 public interface IDepartmentRepository
 {
-    Task<Department?> GetDepartmentByIdAsync(long id);
+    void Add(Department department);
+    Task<Department?> GetByPublicIdAsync(Guid publicId, CancellationToken ct = default);
+    Task<bool> ExistsByNameInHealthUnitAsync(
+        string name,
+        long healthUnitId,
+        CancellationToken ct = default
+    );
+    Task<Department?> GetActiveByPublicIdAsync(Guid publicId, CancellationToken ct = default);
 }
