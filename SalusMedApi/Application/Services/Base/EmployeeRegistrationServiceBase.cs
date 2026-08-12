@@ -7,34 +7,22 @@ using SalusMedApi.Domain.ValueObjects;
 
 namespace SalusMedApi.Application.Services.Base;
 
-public abstract class EmployeeRegistrationServiceBase<TRequest, TResponse, TEntity>
-    : IRegistrationService<TRequest, TResponse>
+public abstract class EmployeeRegistrationServiceBase<TRequest, TResponse, TEntity>(
+    IEmployeeRepository employeeRepository,
+    IDepartmentRepository departmentRepository,
+    IEmployeeNumberGenerator employeeNumberGenerator
+) : IRegistrationService<TRequest, TResponse>
 {
-    private readonly IEmployeeRepository _employeeRepository;
-    private readonly IDepartmentRepository _departmentRepository;
-    private readonly IEmployeeNumberGenerator _employeeNumberGenerator;
-
-    protected EmployeeRegistrationServiceBase(
-        IEmployeeRepository employeeRepository,
-        IDepartmentRepository departmentRepository,
-        IEmployeeNumberGenerator employeeNumberGenerator
-    )
+    public async Task<TResponse> RegisterAsync(TRequest request, CancellationToken ct = default)
     {
-        _employeeRepository = employeeRepository;
-        _departmentRepository = departmentRepository;
-        _employeeNumberGenerator = employeeNumberGenerator;
-    }
+        var employeeNumber = await employeeNumberGenerator.GenerateAsync(ct);
 
-    public async Task<TResponse> RegisterAsync(TRequest request, CancellationToken ct)
-    {
-        var employeeNumber = await _employeeNumberGenerator.GenerateAsync(ct);
-
-        await ValidateCpfAsync(GetCpf(request));
-        await ValidateEmailAsync(GetEmail(request));
-        await ValidatePhoneAsync(GetPhone(request));
+        await ValidateCpfAsync(GetCpf(request), ct);
+        await ValidateEmailAsync(GetEmail(request), ct);
+        await ValidatePhoneAsync(GetPhone(request), ct);
         await ValidateProfessionalFieldsAsync(request);
 
-        var department = await GetDepartmentAsync(GetDepartment(request));
+        var department = await GetDepartmentAsync(GetDepartment(request), ct);
 
         var entity = CreateEntity(request, department, employeeNumber);
 
@@ -43,27 +31,30 @@ public abstract class EmployeeRegistrationServiceBase<TRequest, TResponse, TEnti
         return BuildResponse(entity);
     }
 
-    private async Task ValidatePhoneAsync(Phone phone)
+    private async Task ValidatePhoneAsync(Phone phone, CancellationToken ct = default)
     {
-        if (await _employeeRepository.PhoneExistsAsync(phone))
+        if (await employeeRepository.PhoneExistsAsync(phone, ct))
             throw new ConflictException($"Phone {phone} already in use.");
     }
 
-    private async Task ValidateEmailAsync(Email email)
+    private async Task ValidateEmailAsync(Email email, CancellationToken ct = default)
     {
-        if (await _employeeRepository.EmailExistsAsync(email))
+        if (await employeeRepository.EmailExistsAsync(email, ct))
             throw new ConflictException($"Email {email} already in use.");
     }
 
-    private async Task ValidateCpfAsync(Cpf cpf)
+    private async Task ValidateCpfAsync(Cpf cpf, CancellationToken ct = default)
     {
-        if (await _employeeRepository.CpfExistsAsync(cpf))
+        if (await employeeRepository.CpfExistsAsync(cpf, ct))
             throw new ConflictException($"CPF {cpf} already in use.");
     }
 
-    private async Task<Department> GetDepartmentAsync(long departmentId)
+    private async Task<Department> GetDepartmentAsync(
+        Guid departmentPublicId,
+        CancellationToken ct = default
+    )
     {
-        return await _departmentRepository.GetDepartmentByIdAsync(departmentId)
+        return await departmentRepository.GetByPublicIdAsync(departmentPublicId, ct)
             ?? throw new ResourceNotFoundException("Department not found.");
     }
 
@@ -79,5 +70,5 @@ public abstract class EmployeeRegistrationServiceBase<TRequest, TResponse, TEnti
     protected abstract Cpf GetCpf(TRequest request);
     protected abstract Phone GetPhone(TRequest request);
     protected abstract Email GetEmail(TRequest request);
-    protected abstract long GetDepartment(TRequest request);
+    protected abstract Guid GetDepartment(TRequest request);
 }

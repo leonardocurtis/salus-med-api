@@ -18,11 +18,12 @@ public sealed class EmployeeService(
 {
     public async Task CreateCredentialsAsync(
         string employeeId,
-        CreateEmployeeCredentialsRequest request
+        CreateEmployeeCredentialsRequest request,
+        CancellationToken ct = default
     )
     {
         var employee =
-            await employeeRepository.GetEmployeeByEmployeeNumberAsync(employeeId)
+            await employeeRepository.GetEmployeeByEmployeeNumberAsync(employeeId, ct)
             ?? throw new ResourceNotFoundException("Employee not found");
 
         if (employee.User is not null)
@@ -31,7 +32,7 @@ public sealed class EmployeeService(
         var passwordHash = passwordHasher.Hash(request.Password);
 
         var role =
-            await roleRepository.GetByNameAsync(RoleNames.Staff)
+            await roleRepository.GetByNameAsync(RoleNames.Staff, ct)
             ?? throw new ResourceNotFoundException("Role not found");
 
         var user = User.Create(employee.EmployeeNumber, passwordHash);
@@ -40,6 +41,6 @@ public sealed class EmployeeService(
         employee.AssignCredentials(user);
 
         userRepository.Add(user);
-        await unitOfWork.CommitAsync();
+        await unitOfWork.CommitAsync(ct);
     }
 }

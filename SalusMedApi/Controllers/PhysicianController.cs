@@ -12,10 +12,11 @@ public class PhysicianController(
 {
     [HttpPost("register")]
     public async Task<ActionResult<RegisterPhysicianResponse>> RegisterPhysician(
-        [FromBody] RegisterPhysicianRequest dto
+        [FromBody] RegisterPhysicianRequest dto,
+        CancellationToken ct
     )
     {
-        var physician = await physicianService.RegisterAsync(dto);
+        var physician = await physicianService.RegisterAsync(dto, ct);
         return StatusCode(StatusCodes.Status201Created, physician);
     }
 }

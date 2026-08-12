@@ -64,8 +64,7 @@ public class RegisterPhysicianRequestValidator : AbstractValidator<RegisterPhysi
             .Must(BeAtLeast18YearsOld)
             .WithMessage("The physician must be at least 18 years old.");
         RuleFor(v => v.DepartmentId)
-            .Cascade(CascadeMode.Stop)
-            .GreaterThan(0)
+            .NotEmpty()
             .WithMessage("Department Id must be a valid number.");
 
         RuleFor(v => v.Address).NotNull().SetValidator(new AddressRequestValidator());

@@ -7,6 +7,6 @@ namespace SalusMedApi.Infrastructure.Repositories;
 
 public class RoleRepository(AppDbContext dbContext) : IRoleRepository
 {
-    public async Task<Role?> GetByNameAsync(string name) =>
-        await dbContext.Roles.FirstOrDefaultAsync(role => role.Name == name);
+    public async Task<Role?> GetByNameAsync(string name, CancellationToken ct = default) =>
+        await dbContext.Roles.FirstOrDefaultAsync(role => role.Name == name, ct);
 }

@@ -15,8 +15,6 @@ public class DepartmentMapping : AuditableEntityMapping<Department>
         builder.Property(d => d.Name).IsRequired().HasMaxLength(100);
         builder.Property(d => d.Status).HasConversion<string>().HasMaxLength(50).IsRequired();
 
-        builder.HasIndex(d => new { d.HealthUnitId, d.Name }).IsUnique();
-
         builder
             .HasOne(d => d.HealthUnit)
             .WithMany()

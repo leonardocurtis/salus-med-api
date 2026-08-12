@@ -13,5 +13,5 @@ public record RegisterPhysicianRequest(
     DateOnly? DateOfBirth,
     Specialty? Specialty,
     AddressRequest Address,
-    long DepartmentId
+    Guid DepartmentId
 );

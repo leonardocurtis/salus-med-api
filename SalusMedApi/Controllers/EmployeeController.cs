@@ -11,10 +11,11 @@ public class EmployeeController(IEmployeeService employeeService) : ControllerBa
     [HttpPost("{employeeId}/credentials")]
     public async Task<ActionResult> CreateCredentials(
         string employeeId,
-        [FromBody] CreateEmployeeCredentialsRequest dto
+        [FromBody] CreateEmployeeCredentialsRequest dto,
+        CancellationToken ct
     )
     {
-        await employeeService.CreateCredentialsAsync(employeeId, dto);
+        await employeeService.CreateCredentialsAsync(employeeId, dto, ct);
 
         return StatusCode(StatusCodes.Status201Created);
     }

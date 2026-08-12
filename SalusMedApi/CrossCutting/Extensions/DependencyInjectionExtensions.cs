@@ -44,10 +44,12 @@ public static class DependencyInjectionExtensions
             services.AddScoped<IPatientService, PatientService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IClinicService, ClinicService>();
+            services.AddScoped<IDepartmentService, DepartmentService>();
         }
 
         private void AddRepositories()
         {
+            services.AddScoped<IHealthUnitRepository, HealthUnitRepository>();
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IPatientRepository, PatientRepository>();

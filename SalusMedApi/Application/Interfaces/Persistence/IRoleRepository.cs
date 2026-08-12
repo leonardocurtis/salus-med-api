@@ -4,5 +4,5 @@ namespace SalusMedApi.Application.Interfaces.Persistence;
 
 public interface IRoleRepository
 {
-    Task<Role?> GetByNameAsync(string name);
+    Task<Role?> GetByNameAsync(string name, CancellationToken ct = default);
 }

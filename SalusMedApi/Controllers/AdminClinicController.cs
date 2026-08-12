@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SalusMedApi.Application.Common.Pagination;
 using SalusMedApi.Application.DTOs.Clinic;
+using SalusMedApi.Application.Interfaces.Services;
 using SalusMedApi.Application.Services;
 using SalusMedApi.Domain.Constants;
 
@@ -10,7 +11,7 @@ namespace SalusMedApi.Controllers;
 [ApiController]
 [Route("api/v1/admin/clinics")]
 [Authorize(Roles = RoleNames.Admin)]
-public class AdminClinicController(ClinicService service) : ControllerBase
+public class AdminClinicController(IClinicService service) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<PagedResponse<AdminClinicListResponse>>> ListAllClinics(

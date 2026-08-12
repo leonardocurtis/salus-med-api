@@ -4,5 +4,9 @@ namespace SalusMedApi.Application.Interfaces.Services;
 
 public interface IEmployeeService
 {
-    Task CreateCredentialsAsync(string employeeId, CreateEmployeeCredentialsRequest request);
+    Task CreateCredentialsAsync(
+        string employeeId,
+        CreateEmployeeCredentialsRequest request,
+        CancellationToken ct = default
+    );
 }

@@ -56,5 +56,5 @@ public sealed class PhysicianService(
     protected override Email GetEmail(RegisterPhysicianRequest request) =>
         Email.Create(request.Email);
 
-    protected override long GetDepartment(RegisterPhysicianRequest request) => request.DepartmentId;
+    protected override Guid GetDepartment(RegisterPhysicianRequest request) => request.DepartmentId;
 }
