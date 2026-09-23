@@ -43,11 +43,13 @@ public class Department : AuditableEntity
         Status = DepartmentStatus.Active;
     }
 
-    public void Deactivate()
+    public void Deactivate(string deletedBy)
     {
         if (Status != DepartmentStatus.Active)
             throw new DomainException($"Cannot deactivate a department in status '{Status}'.");
 
         Status = DepartmentStatus.Deactivated;
+        DeletedAt = DateTimeOffset.UtcNow;
+        DeletedBy = deletedBy;
     }
 }

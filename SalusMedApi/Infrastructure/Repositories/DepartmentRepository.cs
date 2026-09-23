@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using SalusMedApi.Application.Common.Pagination;
 using SalusMedApi.Application.Interfaces.Persistence;
 using SalusMedApi.Domain.Entities;
 using SalusMedApi.Domain.Enums;
+using SalusMedApi.Infrastructure.Extensions;
 using SalusMedApi.Infrastructure.Persistence;
 
 namespace SalusMedApi.Infrastructure.Repositories;
@@ -30,7 +32,15 @@ public class DepartmentRepository(AppDbContext context) : IDepartmentRepository
         CancellationToken ct = default
     ) =>
         await context.Departments.FirstOrDefaultAsync(
-            c => c.PublicId == publicId && c.Status == DepartmentStatus.Active,
+            d => d.PublicId == publicId && d.Status == DepartmentStatus.Active,
             ct
         );
+
+    public Task<PagedResponse<Department>> ListAllActiveAsync(
+        PagedRequest request,
+        CancellationToken ct = default
+    ) =>
+        context
+            .Departments.Where(d => d.Status != DepartmentStatus.Deactivated)
+            .ToPagedResponseAsync(request, d => d.Name, ct);
 }

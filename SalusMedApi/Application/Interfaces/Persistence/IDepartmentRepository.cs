@@ -1,3 +1,4 @@
+using SalusMedApi.Application.Common.Pagination;
 using SalusMedApi.Domain.Entities;
 
 namespace SalusMedApi.Application.Interfaces.Persistence;
@@ -12,4 +13,8 @@ public interface IDepartmentRepository
         CancellationToken ct = default
     );
     Task<Department?> GetActiveByPublicIdAsync(Guid publicId, CancellationToken ct = default);
+    Task<PagedResponse<Department>> ListAllActiveAsync(
+        PagedRequest request,
+        CancellationToken ct = default
+    );
 }
