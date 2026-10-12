@@ -34,6 +34,7 @@ public static class ClinicMapper
                 clinic.CorporateName,
                 clinic.TradeName,
                 clinic.CnpjCode.Formatted,
+                clinic.Status,
                 clinic.CreatedAt,
                 clinic.UpdatedAt,
                 clinic.DeletedAt,

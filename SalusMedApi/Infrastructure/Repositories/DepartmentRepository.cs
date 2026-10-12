@@ -43,4 +43,9 @@ public class DepartmentRepository(AppDbContext context) : IDepartmentRepository
         context
             .Departments.Where(d => d.Status != DepartmentStatus.Deactivated)
             .ToPagedResponseAsync(request, d => d.Name, ct);
+
+    public Task<PagedResponse<Department>> ListAllAsync(
+        PagedRequest request,
+        CancellationToken ct = default
+    ) => context.Departments.ToPagedResponseAsync(request, d => d.Name, ct);
 }

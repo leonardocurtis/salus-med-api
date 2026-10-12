@@ -13,7 +13,15 @@ public interface IDepartmentService
         Guid publicId,
         CancellationToken ct = default
     );
+    Task<AdminDepartmentDetailsResponse> GetAdminDepartmentDetailsAsync(
+        Guid publicId,
+        CancellationToken ct = default
+    );
     Task<PagedResponse<DepartmentListResponse>> ListAllActiveAsync(
+        PagedRequest request,
+        CancellationToken ct = default
+    );
+    Task<PagedResponse<AdminDepartmentListResponse>> ListAllAdminAsync(
         PagedRequest request,
         CancellationToken ct = default
     );

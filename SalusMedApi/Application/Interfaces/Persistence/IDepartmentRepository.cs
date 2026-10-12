@@ -17,4 +17,8 @@ public interface IDepartmentRepository
         PagedRequest request,
         CancellationToken ct = default
     );
+    Task<PagedResponse<Department>> ListAllAsync(
+        PagedRequest request,
+        CancellationToken ct = default
+    );
 }

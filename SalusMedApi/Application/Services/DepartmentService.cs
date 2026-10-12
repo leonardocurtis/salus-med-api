@@ -4,11 +4,12 @@ using SalusMedApi.Application.Exceptions;
 using SalusMedApi.Application.Interfaces.Auth;
 using SalusMedApi.Application.Interfaces.Persistence;
 using SalusMedApi.Application.Interfaces.Services;
+using SalusMedApi.Application.Mapper;
 using SalusMedApi.Domain.Entities;
 
 namespace SalusMedApi.Application.Services;
 
-public class DepartmentService(
+public sealed class DepartmentService(
     IUnitOfWorkRepository unitOfWork,
     IDepartmentRepository departmentRepository,
     IHealthUnitRepository healthUnitRepository,
@@ -33,12 +34,12 @@ public class DepartmentService(
         )
             throw new ConflictException($"Department {request.Name} exists in this health unit.");
 
-        var department = Department.Create(request.Name, healthUnit);
+        var department = request.ToEntity(healthUnit);
 
         departmentRepository.Add(department);
         await unitOfWork.CommitAsync(ct);
 
-        return new RegisterDepartmentResponse(department.PublicId, department.Name);
+        return department.ToResponse();
     }
 
     public async Task<DepartmentDetailsResponse> GetDepartmentDetailsAsync(
@@ -50,7 +51,7 @@ public class DepartmentService(
             await departmentRepository.GetActiveByPublicIdAsync(publicId, ct)
             ?? throw new ResourceNotFoundException("Department not found");
 
-        return new DepartmentDetailsResponse(department.PublicId, department.Name);
+        return department.ToDetails();
     }
 
     public async Task<PagedResponse<DepartmentListResponse>> ListAllActiveAsync(
@@ -101,16 +102,54 @@ public class DepartmentService(
         department.Rename(request.Name);
         await unitOfWork.CommitAsync(ct);
 
-        return new UpdateDepartmentResponse(department.PublicId, department.Name);
+        return department.ToUpdate();
     }
 
     public async Task ActivateDepartmentAsync(Guid clinicId, CancellationToken ct = default)
     {
-        var deparment =
+        var department =
             await departmentRepository.GetByPublicIdAsync(clinicId, ct)
             ?? throw new ResourceNotFoundException("Department not found");
 
-        deparment.Activate();
+        department.Activate();
         await unitOfWork.CommitAsync(ct);
+    }
+
+    public async Task<AdminDepartmentDetailsResponse> GetAdminDepartmentDetailsAsync(
+        Guid publicId,
+        CancellationToken ct = default
+    )
+    {
+        var department =
+            await departmentRepository.GetByPublicIdAsync(publicId, ct)
+            ?? throw new ResourceNotFoundException("Clinic not found");
+
+        return department.ToDetailsAdmin();
+    }
+
+    public async Task<PagedResponse<AdminDepartmentListResponse>> ListAllAdminAsync(
+        PagedRequest request,
+        CancellationToken ct = default
+    )
+    {
+        var pagedClinics = await departmentRepository.ListAllAsync(request, ct);
+
+        var dto = pagedClinics.Content.Select(d => new AdminDepartmentListResponse(
+            d.PublicId,
+            d.Name,
+            d.Status,
+            d.CreatedAt
+        ));
+
+        return new PagedResponse<AdminDepartmentListResponse>()
+        {
+            Content = dto,
+            Page = pagedClinics.Page,
+            Size = pagedClinics.Size,
+            TotalElements = pagedClinics.TotalElements,
+            TotalPages = pagedClinics.TotalPages,
+            First = pagedClinics.First,
+            Last = pagedClinics.Last,
+        };
     }
 }

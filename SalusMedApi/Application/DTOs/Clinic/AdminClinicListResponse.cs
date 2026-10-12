@@ -8,10 +8,5 @@ public record AdminClinicListResponse(
     string? TradeName,
     string CnpjCode,
     ClinicStatus Status,
-    DateTimeOffset CreateAt,
-    DateTimeOffset? UpdatedAt,
-    DateTimeOffset? DeletedAt,
-    string CreatedBy,
-    string? UpdatedBy,
-    string? DeletedBy
+    DateTimeOffset CreateAt
 );

@@ -1,5 +1,6 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi;
 using SalusMedApi.Application.Interfaces.Security;
 using SalusMedApi.CrossCutting.ExceptionHandlers;
@@ -13,7 +14,10 @@ builder
     .Services.AddControllersWithDefaults() // Controllers + JSON
     .AddDatabase(builder.Configuration) // DbContext + connection string
     .AddJwtAuthentication(builder.Configuration) // JWT
-    .AddAuthorization()
+    .AddAuthorization(opt =>
+    {
+        opt.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+    })
     .AddApplication() // Services
     .AddInfrastructure() // Repositories + Security
     .AddValidatorsFromAssemblyContaining<Program>() // FluentValidation

@@ -1,3 +1,5 @@
+using SalusMedApi.Domain.Enums;
+
 namespace SalusMedApi.Application.DTOs.Clinic;
 
 public record AdminClinicDetailsResponse(
@@ -5,6 +7,7 @@ public record AdminClinicDetailsResponse(
     string CorporateName,
     string? TradeName,
     string CnpjCode,
+    ClinicStatus Status,
     DateTimeOffset CreateAt,
     DateTimeOffset? UpdatedAt,
     DateTimeOffset? DeletedAt,

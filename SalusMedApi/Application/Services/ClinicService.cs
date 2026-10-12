@@ -9,7 +9,7 @@ using SalusMedApi.Domain.ValueObjects;
 
 namespace SalusMedApi.Application.Services;
 
-public class ClinicService(
+public sealed class ClinicService(
     IUnitOfWorkRepository unitOfWork,
     IClinicRepository clinicRepository,
     ICurrentUserService currentUser
@@ -73,12 +73,7 @@ public class ClinicService(
             c.TradeName,
             c.CnpjCode.Value,
             c.Status,
-            c.CreatedAt,
-            c.UpdatedAt,
-            c.DeletedAt,
-            c.CreatedBy,
-            c.UpdatedBy,
-            c.DeletedBy
+            c.CreatedAt
         ));
 
         return new PagedResponse<AdminClinicListResponse>()
