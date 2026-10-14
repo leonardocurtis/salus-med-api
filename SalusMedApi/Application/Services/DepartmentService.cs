@@ -5,7 +5,6 @@ using SalusMedApi.Application.Interfaces.Auth;
 using SalusMedApi.Application.Interfaces.Persistence;
 using SalusMedApi.Application.Interfaces.Services;
 using SalusMedApi.Application.Mapper;
-using SalusMedApi.Domain.Entities;
 
 namespace SalusMedApi.Application.Services;
 
@@ -13,6 +12,7 @@ public sealed class DepartmentService(
     IUnitOfWorkRepository unitOfWork,
     IDepartmentRepository departmentRepository,
     IHealthUnitRepository healthUnitRepository,
+    IDepartmentQueries departmentQueries,
     ICurrentUserService currentUser
 ) : IDepartmentService
 {
@@ -45,44 +45,19 @@ public sealed class DepartmentService(
     public async Task<DepartmentDetailsResponse> GetDepartmentDetailsAsync(
         Guid publicId,
         CancellationToken ct = default
-    )
-    {
-        var department =
-            await departmentRepository.GetActiveByPublicIdAsync(publicId, ct)
-            ?? throw new ResourceNotFoundException("Department not found");
-
-        return department.ToDetails();
-    }
+    ) =>
+        await departmentQueries.GetActiveDetailsByPublicIdAsync(publicId, ct)
+        ?? throw new ResourceNotFoundException("Department not found");
 
     public async Task<PagedResponse<DepartmentListResponse>> ListAllActiveAsync(
         PagedRequest request,
         CancellationToken ct = default
-    )
-    {
-        var pagedDepartments = await departmentRepository.ListAllActiveAsync(request, ct);
-
-        var dto = pagedDepartments.Content.Select(d => new DepartmentListResponse(
-            d.PublicId,
-            d.Name,
-            d.Status
-        ));
-
-        return new PagedResponse<DepartmentListResponse>()
-        {
-            Content = dto,
-            Page = pagedDepartments.Page,
-            Size = pagedDepartments.Size,
-            TotalElements = pagedDepartments.TotalElements,
-            TotalPages = pagedDepartments.TotalPages,
-            First = pagedDepartments.First,
-            Last = pagedDepartments.Last,
-        };
-    }
+    ) => await departmentQueries.ListAllActiveAsync(request, ct);
 
     public async Task DeactivateDepartmentAsync(Guid departmentId, CancellationToken ct = default)
     {
         var department =
-            await departmentRepository.GetByPublicIdAsync(departmentId, ct)
+            await departmentRepository.GetAnyStatusByPublicIdAsync(departmentId, ct)
             ?? throw new ResourceNotFoundException("Department not found");
 
         department.Deactivate(currentUser.EmployeeIdNumber ?? "SYSTEM");
@@ -105,10 +80,10 @@ public sealed class DepartmentService(
         return department.ToUpdate();
     }
 
-    public async Task ActivateDepartmentAsync(Guid clinicId, CancellationToken ct = default)
+    public async Task ActivateDepartmentAsync(Guid departmentId, CancellationToken ct = default)
     {
         var department =
-            await departmentRepository.GetByPublicIdAsync(clinicId, ct)
+            await departmentRepository.GetAnyStatusByPublicIdAsync(departmentId, ct)
             ?? throw new ResourceNotFoundException("Department not found");
 
         department.Activate();
@@ -118,38 +93,12 @@ public sealed class DepartmentService(
     public async Task<AdminDepartmentDetailsResponse> GetAdminDepartmentDetailsAsync(
         Guid publicId,
         CancellationToken ct = default
-    )
-    {
-        var department =
-            await departmentRepository.GetByPublicIdAsync(publicId, ct)
-            ?? throw new ResourceNotFoundException("Clinic not found");
-
-        return department.ToDetailsAdmin();
-    }
+    ) =>
+        await departmentQueries.GetAdminDetailsByPublicIdAsync(publicId, ct)
+        ?? throw new ResourceNotFoundException("Department not found");
 
     public async Task<PagedResponse<AdminDepartmentListResponse>> ListAllAdminAsync(
         PagedRequest request,
         CancellationToken ct = default
-    )
-    {
-        var pagedClinics = await departmentRepository.ListAllAsync(request, ct);
-
-        var dto = pagedClinics.Content.Select(d => new AdminDepartmentListResponse(
-            d.PublicId,
-            d.Name,
-            d.Status,
-            d.CreatedAt
-        ));
-
-        return new PagedResponse<AdminDepartmentListResponse>()
-        {
-            Content = dto,
-            Page = pagedClinics.Page,
-            Size = pagedClinics.Size,
-            TotalElements = pagedClinics.TotalElements,
-            TotalPages = pagedClinics.TotalPages,
-            First = pagedClinics.First,
-            Last = pagedClinics.Last,
-        };
-    }
+    ) => await departmentQueries.ListAllByAnyStatusAsync(request, ct);
 }

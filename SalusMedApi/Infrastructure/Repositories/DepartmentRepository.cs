@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using SalusMedApi.Application.Common.Pagination;
 using SalusMedApi.Application.Interfaces.Persistence;
 using SalusMedApi.Domain.Entities;
-using SalusMedApi.Domain.Enums;
 using SalusMedApi.Infrastructure.Extensions;
 using SalusMedApi.Infrastructure.Persistence;
 
@@ -12,10 +10,10 @@ public class DepartmentRepository(AppDbContext context) : IDepartmentRepository
 {
     public void Add(Department department) => context.Departments.Add(department);
 
-    public async Task<Department?> GetByPublicIdAsync(
+    public async Task<Department?> GetAnyStatusByPublicIdAsync(
         Guid publicId,
         CancellationToken ct = default
-    ) => await context.Departments.FirstOrDefaultAsync(d => d.PublicId == publicId, ct);
+    ) => await context.Departments.ByPublicId(publicId).FirstOrDefaultAsync(ct);
 
     public async Task<bool> ExistsByNameInHealthUnitAsync(
         string name,
@@ -27,25 +25,6 @@ public class DepartmentRepository(AppDbContext context) : IDepartmentRepository
             ct
         );
 
-    public async Task<Department?> GetActiveByPublicIdAsync(
-        Guid publicId,
-        CancellationToken ct = default
-    ) =>
-        await context.Departments.FirstOrDefaultAsync(
-            d => d.PublicId == publicId && d.Status == DepartmentStatus.Active,
-            ct
-        );
-
-    public Task<PagedResponse<Department>> ListAllActiveAsync(
-        PagedRequest request,
-        CancellationToken ct = default
-    ) =>
-        context
-            .Departments.Where(d => d.Status != DepartmentStatus.Deactivated)
-            .ToPagedResponseAsync(request, d => d.Name, ct);
-
-    public Task<PagedResponse<Department>> ListAllAsync(
-        PagedRequest request,
-        CancellationToken ct = default
-    ) => context.Departments.ToPagedResponseAsync(request, d => d.Name, ct);
+    public async Task<Department?> GetActiveByPublicIdAsync(Guid publicId, CancellationToken ct) =>
+        await context.Departments.ActiveByPublicId(publicId).FirstOrDefaultAsync(ct);
 }

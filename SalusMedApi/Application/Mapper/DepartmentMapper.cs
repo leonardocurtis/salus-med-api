@@ -14,21 +14,6 @@ public static class DepartmentMapper
     {
         public RegisterDepartmentResponse ToResponse() => new(department.PublicId, department.Name);
 
-        public DepartmentDetailsResponse ToDetails() => new(department.PublicId, department.Name);
-
         public UpdateDepartmentResponse ToUpdate() => new(department.PublicId, department.Name);
-
-        public AdminDepartmentDetailsResponse ToDetailsAdmin() =>
-            new(
-                department.PublicId,
-                department.Name,
-                department.Status,
-                department.CreatedAt,
-                department.UpdatedAt,
-                department.DeletedAt,
-                department.CreatedBy,
-                department.UpdatedBy,
-                department.DeletedBy
-            );
     }
 }

@@ -54,7 +54,7 @@ public abstract class EmployeeRegistrationServiceBase<TRequest, TResponse, TEnti
         CancellationToken ct = default
     )
     {
-        return await departmentRepository.GetByPublicIdAsync(departmentPublicId, ct)
+        return await departmentRepository.GetAnyStatusByPublicIdAsync(departmentPublicId, ct)
             ?? throw new ResourceNotFoundException("Department not found.");
     }
 

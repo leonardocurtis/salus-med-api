@@ -5,6 +5,7 @@ using SalusMedApi.Application.Interfaces.Security;
 using SalusMedApi.Application.Interfaces.Services;
 using SalusMedApi.Application.Services;
 using SalusMedApi.Infrastructure.Generators;
+using SalusMedApi.Infrastructure.Queries;
 using SalusMedApi.Infrastructure.Repositories;
 using SalusMedApi.Infrastructure.Security;
 using SalusMedApi.Infrastructure.Security.Authentication;
@@ -25,6 +26,7 @@ public static class DependencyInjectionExtensions
         public IServiceCollection AddInfrastructure()
         {
             services.AddRepositories();
+            services.AddReadOnlyQueries();
             services.AddSecurity();
             services.AddGenerators();
             services.AddCurrentUser();
@@ -58,6 +60,11 @@ public static class DependencyInjectionExtensions
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IUnitOfWorkRepository, UnitOfWorkRepository>();
             services.AddScoped<IClinicRepository, ClinicRepository>();
+        }
+
+        private void AddReadOnlyQueries()
+        {
+            services.AddScoped<IDepartmentQueries, DepartmentQueries>();
         }
 
         private void AddSecurity()

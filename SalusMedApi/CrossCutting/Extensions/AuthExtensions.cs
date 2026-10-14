@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -28,6 +29,8 @@ public static class AuthExtensions
             })
             .AddJwtBearer(opt =>
             {
+                opt.MapInboundClaims = false;
+
                 opt.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -40,6 +43,7 @@ public static class AuthExtensions
                         Encoding.UTF8.GetBytes(jwtSettings.SecretKey)
                     ),
                     ClockSkew = TimeSpan.FromSeconds(30),
+                    NameClaimType = JwtRegisteredClaimNames.UniqueName,
                     RoleClaimType = "role",
                 };
             });

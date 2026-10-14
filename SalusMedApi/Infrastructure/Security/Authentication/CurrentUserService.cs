@@ -6,10 +6,10 @@ namespace SalusMedApi.Infrastructure.Security.Authentication;
 
 public class CurrentUserService(IHttpContextAccessor accessor) : ICurrentUserService
 {
-    public string? UserId => accessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    private ClaimsPrincipal? User => accessor.HttpContext?.User;
+    public string? UserId => User?.FindFirstValue(JwtRegisteredClaimNames.Sub);
 
-    public string? EmployeeIdNumber =>
-        accessor.HttpContext?.User.FindFirstValue(JwtRegisteredClaimNames.UniqueName);
+    public string? EmployeeIdNumber => User?.FindFirstValue(JwtRegisteredClaimNames.UniqueName);
 
-    public bool IsInRole(string role) => accessor.HttpContext?.User.IsInRole(role) ?? false;
+    public bool IsInRole(string role) => User?.IsInRole(role) ?? false;
 }
