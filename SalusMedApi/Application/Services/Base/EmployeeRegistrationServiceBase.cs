@@ -2,7 +2,6 @@ using SalusMedApi.Application.Exceptions;
 using SalusMedApi.Application.Interfaces.Persistence;
 using SalusMedApi.Application.Interfaces.Services;
 using SalusMedApi.Domain.Entities;
-using SalusMedApi.Domain.Enums;
 using SalusMedApi.Domain.ValueObjects;
 
 namespace SalusMedApi.Application.Services.Base;
@@ -54,7 +53,7 @@ public abstract class EmployeeRegistrationServiceBase<TRequest, TResponse, TEnti
         CancellationToken ct = default
     )
     {
-        return await departmentRepository.GetAnyStatusByPublicIdAsync(departmentPublicId, ct)
+        return await departmentRepository.GetByPublicIdAsync(departmentPublicId, ct)
             ?? throw new ResourceNotFoundException("Department not found.");
     }
 

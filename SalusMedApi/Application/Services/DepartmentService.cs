@@ -57,7 +57,7 @@ public sealed class DepartmentService(
     public async Task DeactivateDepartmentAsync(Guid departmentId, CancellationToken ct = default)
     {
         var department =
-            await departmentRepository.GetAnyStatusByPublicIdAsync(departmentId, ct)
+            await departmentRepository.GetByPublicIdAsync(departmentId, ct)
             ?? throw new ResourceNotFoundException("Department not found");
 
         department.Deactivate(currentUser.EmployeeIdNumber ?? "SYSTEM");
@@ -83,7 +83,7 @@ public sealed class DepartmentService(
     public async Task ActivateDepartmentAsync(Guid departmentId, CancellationToken ct = default)
     {
         var department =
-            await departmentRepository.GetAnyStatusByPublicIdAsync(departmentId, ct)
+            await departmentRepository.GetByPublicIdAsync(departmentId, ct)
             ?? throw new ResourceNotFoundException("Department not found");
 
         department.Activate();
@@ -97,8 +97,8 @@ public sealed class DepartmentService(
         await departmentQueries.GetAdminDetailsByPublicIdAsync(publicId, ct)
         ?? throw new ResourceNotFoundException("Department not found");
 
-    public async Task<PagedResponse<AdminDepartmentListResponse>> ListAllAdminAsync(
+    public Task<PagedResponse<AdminDepartmentListResponse>> ListAllAdminAsync(
         PagedRequest request,
         CancellationToken ct = default
-    ) => await departmentQueries.ListAllByAnyStatusAsync(request, ct);
+    ) => departmentQueries.ListAllByAnyStatusAsync(request, ct);
 }

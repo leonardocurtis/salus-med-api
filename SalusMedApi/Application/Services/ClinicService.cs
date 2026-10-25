@@ -12,7 +12,8 @@ namespace SalusMedApi.Application.Services;
 public sealed class ClinicService(
     IUnitOfWorkRepository unitOfWork,
     IClinicRepository clinicRepository,
-    ICurrentUserService currentUser
+    ICurrentUserService currentUser,
+    IClinicQueries clinicQueries
 ) : IClinicService
 {
     public async Task<RegisterClinicResponse> RegisterClinicAsync(
@@ -23,7 +24,7 @@ public sealed class ClinicService(
         var cnpj = Cnpj.Create(request.Cnpj);
 
         if (await clinicRepository.CnpjExistsAsync(cnpj, ct))
-            throw new ConflictException($"Cpf {request.Cnpj} already in use.");
+            throw new ConflictException($"Cnpj {request.Cnpj} already in use.");
 
         var clinic = request.ToEntity();
 
@@ -33,84 +34,29 @@ public sealed class ClinicService(
         return clinic.ToResponse();
     }
 
-    public async Task<PagedResponse<ClinicListResponse>> ListAllActiveAsync(
+    public Task<PagedResponse<ClinicListResponse>> ListAllActiveAsync(
         PagedRequest request,
         CancellationToken ct = default
-    )
-    {
-        var pagedClinics = await clinicRepository.ListAllActiveAsync(request, ct);
+    ) => clinicQueries.ListAllActiveAsync(request, ct);
 
-        var dto = pagedClinics.Content.Select(c => new ClinicListResponse(
-            c.PublicId,
-            c.CorporateName,
-            c.TradeName,
-            c.CnpjCode.Value,
-            c.Status
-        ));
-
-        return new PagedResponse<ClinicListResponse>()
-        {
-            Content = dto,
-            Page = pagedClinics.Page,
-            Size = pagedClinics.Size,
-            TotalElements = pagedClinics.TotalElements,
-            TotalPages = pagedClinics.TotalPages,
-            First = pagedClinics.First,
-            Last = pagedClinics.Last,
-        };
-    }
-
-    public async Task<PagedResponse<AdminClinicListResponse>> ListAllAdminAsync(
+    public Task<PagedResponse<AdminClinicListResponse>> ListAllAdminAsync(
         PagedRequest request,
         CancellationToken ct = default
-    )
-    {
-        var pagedClinics = await clinicRepository.ListAllAsync(request, ct);
-
-        var dto = pagedClinics.Content.Select(c => new AdminClinicListResponse(
-            c.PublicId,
-            c.CorporateName,
-            c.TradeName,
-            c.CnpjCode.Value,
-            c.Status,
-            c.CreatedAt
-        ));
-
-        return new PagedResponse<AdminClinicListResponse>()
-        {
-            Content = dto,
-            Page = pagedClinics.Page,
-            Size = pagedClinics.Size,
-            TotalElements = pagedClinics.TotalElements,
-            TotalPages = pagedClinics.TotalPages,
-            First = pagedClinics.First,
-            Last = pagedClinics.Last,
-        };
-    }
+    ) => clinicQueries.ListAllByAnyStatusAsync(request, ct);
 
     public async Task<ClinicDetailsResponse> GetClinicDetailsAsync(
         Guid publicId,
         CancellationToken ct = default
-    )
-    {
-        var clinic =
-            await clinicRepository.GetActiveByPublicIdAsync(publicId, ct)
-            ?? throw new ResourceNotFoundException("Clinic not found");
-
-        return clinic.ToDetails();
-    }
+    ) =>
+        await clinicQueries.GetActiveDetailsByPublicIdAsync(publicId, ct)
+        ?? throw new ResourceNotFoundException("Clinic not found");
 
     public async Task<AdminClinicDetailsResponse> GetAdminClinicDetailsAsync(
         Guid publicId,
         CancellationToken ct = default
-    )
-    {
-        var clinic =
-            await clinicRepository.GetByPublicIdAsync(publicId, ct)
-            ?? throw new ResourceNotFoundException("Clinic not found");
-
-        return clinic.ToDetailsAdmin();
-    }
+    ) =>
+        await clinicQueries.GetAdminDetailsByPublicIdAsync(publicId, ct)
+        ?? throw new ResourceNotFoundException("Clinic not found");
 
     public async Task DeactivateClinicAsync(Guid clinicId, CancellationToken ct = default)
     {
