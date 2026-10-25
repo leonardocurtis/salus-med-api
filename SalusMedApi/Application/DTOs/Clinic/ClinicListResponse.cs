@@ -4,7 +4,7 @@ using SalusMedApi.Domain.ValueObjects;
 namespace SalusMedApi.Application.DTOs.Clinic;
 
 public record ClinicListResponse(
-    Guid Id,
+    Guid ClinicId,
     string CorporateName,
     string? TradeName,
     string Cnpj,
