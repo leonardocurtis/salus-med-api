@@ -6,7 +6,7 @@ namespace SalusMedApi.Application.Interfaces.Persistence;
 public interface IDepartmentRepository
 {
     void Add(Department department);
-    Task<Department?> GetAnyStatusByPublicIdAsync(Guid publicId, CancellationToken ct = default);
+    Task<Department?> GetByPublicIdAsync(Guid publicId, CancellationToken ct = default);
     Task<bool> ExistsByNameInHealthUnitAsync(
         string name,
         long healthUnitId,

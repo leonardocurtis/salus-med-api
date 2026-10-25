@@ -46,8 +46,13 @@ public class DepartmentQueries(AppDbContext context) : IDepartmentQueries
         await context
             .Departments.AsNoTracking()
             .Active()
-            .Select(d => new DepartmentListResponse(d.PublicId, d.Name, d.Status))
-            .ToPagedResponseAsync(request, d => d.Name, ct);
+            .ToPagedResponseAsync(
+                request,
+                d => d.Name,
+                d => d.Id,
+                d => new DepartmentListResponse(d.PublicId, d.Name, d.Status),
+                ct
+            );
 
     public async Task<PagedResponse<AdminDepartmentListResponse>> ListAllByAnyStatusAsync(
         PagedRequest request,
@@ -55,6 +60,11 @@ public class DepartmentQueries(AppDbContext context) : IDepartmentQueries
     ) =>
         await context
             .Departments.AsNoTracking()
-            .Select(d => new AdminDepartmentListResponse(d.PublicId, d.Name, d.Status, d.CreatedAt))
-            .ToPagedResponseAsync(request, d => d.Name, ct);
+            .ToPagedResponseAsync(
+                request,
+                d => d.Name,
+                d => d.Id,
+                d => new AdminDepartmentListResponse(d.PublicId, d.Name, d.Status, d.CreatedAt),
+                ct
+            );
 }

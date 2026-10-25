@@ -16,28 +16,11 @@ public class ClinicRepository(AppDbContext context) : IClinicRepository
 
     public void Add(Clinic clinic) => context.Clinics.Add(clinic);
 
-    public Task<PagedResponse<Clinic>> ListAllActiveAsync(
-        PagedRequest request,
-        CancellationToken ct = default
-    ) =>
-        context
-            .Clinics.Where(c => c.Status != ClinicStatus.Deactivated)
-            .ToPagedResponseAsync(request, c => c.CorporateName, ct);
-
-    public Task<PagedResponse<Clinic>> ListAllAsync(
-        PagedRequest request,
-        CancellationToken ct = default
-    ) => context.Clinics.ToPagedResponseAsync(request, c => c.CorporateName, ct);
-
     public async Task<Clinic?> GetByPublicIdAsync(Guid publicId, CancellationToken ct = default) =>
-        await context.Clinics.FirstOrDefaultAsync(c => c.PublicId == publicId, ct);
+        await context.Clinics.ByPublicId(publicId).FirstOrDefaultAsync(ct);
 
     public async Task<Clinic?> GetActiveByPublicIdAsync(
         Guid publicId,
         CancellationToken ct = default
-    ) =>
-        await context.Clinics.FirstOrDefaultAsync(
-            c => c.PublicId == publicId && c.Status == ClinicStatus.Active,
-            ct
-        );
+    ) => await context.Clinics.ActiveByPublicId(publicId).FirstOrDefaultAsync(ct);
 }

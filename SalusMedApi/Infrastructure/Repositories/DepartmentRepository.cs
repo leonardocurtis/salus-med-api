@@ -10,7 +10,7 @@ public class DepartmentRepository(AppDbContext context) : IDepartmentRepository
 {
     public void Add(Department department) => context.Departments.Add(department);
 
-    public async Task<Department?> GetAnyStatusByPublicIdAsync(
+    public async Task<Department?> GetByPublicIdAsync(
         Guid publicId,
         CancellationToken ct = default
     ) => await context.Departments.ByPublicId(publicId).FirstOrDefaultAsync(ct);
