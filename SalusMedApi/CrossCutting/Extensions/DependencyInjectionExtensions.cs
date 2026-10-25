@@ -65,6 +65,7 @@ public static class DependencyInjectionExtensions
         private void AddReadOnlyQueries()
         {
             services.AddScoped<IDepartmentQueries, DepartmentQueries>();
+            services.AddScoped<IClinicQueries, ClinicQueries>();
         }
 
         private void AddSecurity()
