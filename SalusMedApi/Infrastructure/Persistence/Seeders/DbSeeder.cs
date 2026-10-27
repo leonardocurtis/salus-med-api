@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using SalusMedApi.Application.Interfaces.Security;
 using SalusMedApi.Domain.Constants;
 using SalusMedApi.Domain.Entities;
+using SalusMedApi.Infrastructure.Generators;
 
 namespace SalusMedApi.Infrastructure.Persistence.Seeders;
 
@@ -40,9 +41,9 @@ public static class DbSeeder
         IPasswordHasher passwordHasher
     )
     {
-        const string username = "26070000000";
+        var adminNumber = EmployeeNumberGenerator.FromSequence(100000);
 
-        var alreadyExists = await context.Users.AnyAsync(u => u.Username == username);
+        var alreadyExists = await context.Users.AnyAsync(u => u.Username == adminNumber);
 
         if (alreadyExists)
             return;
@@ -55,7 +56,7 @@ public static class DbSeeder
 
         var passwordHash = passwordHasher.Hash("Admin@1234!");
 
-        var admin = User.Create(username, passwordHash);
+        var admin = User.Create(adminNumber, passwordHash);
 
         admin.AssignRole(adminRole);
 

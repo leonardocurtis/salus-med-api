@@ -13,7 +13,7 @@ public class EmployeeMapping : AuditableEntityMapping<Employee>
 
         builder.ToTable("employees");
 
-        builder.Property(e => e.EmployeeNumber).IsRequired().HasMaxLength(10).IsFixedLength();
+        builder.Property(e => e.EmployeeNumber).IsRequired().HasMaxLength(10);
         builder.Property(e => e.Name).HasMaxLength(100).IsRequired();
         builder
             .Property(e => e.PhoneNumber)

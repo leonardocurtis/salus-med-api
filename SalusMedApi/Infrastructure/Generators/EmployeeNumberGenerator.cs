@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using SalusMedApi.Application.Interfaces.Services;
 using SalusMedApi.Infrastructure.Persistence;
@@ -6,17 +7,47 @@ namespace SalusMedApi.Infrastructure.Generators;
 
 public sealed class EmployeeNumberGenerator(AppDbContext context) : IEmployeeNumberGenerator
 {
-    public async Task<string> GenerateAsync(CancellationToken cancellationToken = default)
+    public async Task<string> GenerateAsync(CancellationToken ct = default)
     {
-        var nextValue = await context
-            .Database.SqlQueryRaw<long>("SELECT nextval('employee_number_seq')")
-            .FirstAsync(cancellationToken);
+        var next = await context
+            .Database.SqlQueryRaw<long>("SELECT nextval('employee_number_seq') AS \"Value\"")
+            .FirstAsync(ct);
 
-        var now = DateTime.UtcNow;
+        return FromSequence(next);
+    }
 
-        var year = now.Year % 100;
-        var month = now.Month;
+    public static string FromSequence(long sequenceValue)
+    {
+        var payload = sequenceValue.ToString(CultureInfo.InvariantCulture);
+        return payload + ComputeCheckDigit(payload);
+    }
 
-        return $"{year:D2}{month:D2}{nextValue:D7)}";
+    public static bool IsValid(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value) || value.Length < 2 || !value.All(char.IsAsciiDigit))
+            return false;
+
+        return ComputeCheckDigit(value[..^1]) == value[^1] - '0';
+    }
+
+    private static int ComputeCheckDigit(string payload)
+    {
+        var sum = 0;
+        var doubleIt = true;
+
+        for (var i = payload.Length - 1; i >= 0; i--)
+        {
+            var digit = payload[i] - '0';
+            if (doubleIt)
+            {
+                digit *= 2;
+                if (digit > 9)
+                    digit -= 9;
+            }
+            sum += digit;
+            doubleIt = !doubleIt;
+        }
+
+        return (10 - sum % 10) % 10;
     }
 }
