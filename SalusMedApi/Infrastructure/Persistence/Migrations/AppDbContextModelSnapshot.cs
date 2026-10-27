@@ -221,16 +221,14 @@ namespace SalusMedApi.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("EmployeeNumber")
                         .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("char(11)")
+                        .HasMaxLength(10)
+                        .HasColumnType("character(10)")
                         .HasColumnName("employee_number")
                         .IsFixedLength();
 
-                    b.Property<string>("Gender")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("gender");
+                    b.Property<DateOnly>("HiredAt")
+                        .HasColumnType("date")
+                        .HasColumnName("hired_at");
 
                     b.Property<string>("Name")
                         .IsRequired()

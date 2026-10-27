@@ -41,12 +41,6 @@ public class RegisterPhysicianRequestValidator : AbstractValidator<RegisterPhysi
             .WithMessage("CPF must contain exactly 11 numeric digits.")
             .Must(BeAValidCpf)
             .WithMessage("Invalid CPF.");
-        RuleFor(v => v.Gender)
-            .Cascade(CascadeMode.Stop)
-            .NotNull()
-            .WithMessage("Gender is required.")
-            .IsInEnum()
-            .WithMessage("Gender value is invalid.");
         RuleFor(v => v.Specialty)
             .Cascade(CascadeMode.Stop)
             .NotNull()
