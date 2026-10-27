@@ -14,20 +14,25 @@ public sealed class AuthService(
     IPasswordHasher passwordHasher
 ) : IAuthService
 {
-    public async Task<LoginResponse> LoginAsync(LoginRequest loginRequest)
+    private readonly string _dummyHash = passwordHasher.Hash("dummy-password-for-timing");
+
+    public async Task<LoginResponse> LoginAsync(LoginRequest request)
     {
-        var user =
-            await userRepository.GetUserByUsernameAsync(loginRequest.Username)
-            ?? throw new UnauthorizedException("Invalid credentials.");
+        if (
+            string.IsNullOrWhiteSpace(request.Username)
+            || string.IsNullOrEmpty(request.Password)
+            || request.Password.Length > 128
+        )
+            throw new UnauthorizedException("Invalid credentials.");
 
-        if (user.Status == AccountStatus.Deactivated)
-            throw new ForbiddenException("Account is inactive.");
+        var user = await userRepository.GetUserByUsernameAsync(request.Username);
 
-        if (!passwordHasher.Verify(loginRequest.Password, user.PasswordHash))
+        var passwordOk = passwordHasher.Verify(request.Password, user?.PasswordHash ?? _dummyHash);
+
+        if (user is null || !passwordOk || user.Status == AccountStatus.Deactivated)
             throw new UnauthorizedException("Invalid credentials.");
 
         var token = tokenService.GenerateToken(user);
-
         return new LoginResponse(user.PublicId, user.Username, token.UserToken, token.ExpiresAt);
     }
 }
