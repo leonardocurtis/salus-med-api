@@ -222,9 +222,8 @@ namespace SalusMedApi.Infrastructure.Persistence.Migrations
                     b.Property<string>("EmployeeNumber")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("character(10)")
-                        .HasColumnName("employee_number")
-                        .IsFixedLength();
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("employee_number");
 
                     b.Property<DateOnly>("HiredAt")
                         .HasColumnType("date")
