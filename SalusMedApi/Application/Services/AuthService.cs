@@ -5,6 +5,7 @@ using SalusMedApi.Application.Interfaces.Persistence;
 using SalusMedApi.Application.Interfaces.Security;
 using SalusMedApi.Application.Interfaces.Services;
 using SalusMedApi.Domain.Enums;
+using SalusMedApi.Infrastructure.Generators;
 
 namespace SalusMedApi.Application.Services;
 
@@ -20,6 +21,7 @@ public sealed class AuthService(
     {
         if (
             string.IsNullOrWhiteSpace(request.Username)
+            || !EmployeeNumberGenerator.IsValid(request.Username)
             || string.IsNullOrEmpty(request.Password)
             || request.Password.Length > 128
         )
