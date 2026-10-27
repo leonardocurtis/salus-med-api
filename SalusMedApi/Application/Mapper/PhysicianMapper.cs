@@ -37,11 +37,11 @@ public static class PhysicianMapper
             phone: request.Phone,
             email: request.Email,
             cpf: request.Cpf,
-            gender: request.Gender!.Value,
             dateOfBirth: request.DateOfBirth!.Value,
             address: address,
             occupation: occupation,
-            department: department
+            department: department,
+            hiredAt: request.HiredAt
         );
 
         return Physician.Create(

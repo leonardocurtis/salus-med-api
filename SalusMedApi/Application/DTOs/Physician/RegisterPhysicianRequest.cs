@@ -9,9 +9,9 @@ public record RegisterPhysicianRequest(
     string Email,
     string Crm,
     string Cpf,
-    Gender? Gender,
     DateOnly? DateOfBirth,
     Specialty? Specialty,
     AddressRequest Address,
-    Guid DepartmentId
+    Guid DepartmentId,
+    DateOnly HiredAt
 );
