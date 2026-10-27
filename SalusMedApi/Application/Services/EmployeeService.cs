@@ -17,17 +17,20 @@ public sealed class EmployeeService(
 ) : IEmployeeService
 {
     public async Task CreateCredentialsAsync(
-        string employeeId,
+        Guid publicId,
         CreateEmployeeCredentialsRequest request,
         CancellationToken ct = default
     )
     {
         var employee =
-            await employeeRepository.GetEmployeeByEmployeeNumberAsync(employeeId, ct)
+            await employeeRepository.GetByPublicIdWithUserAsync(publicId, ct)
             ?? throw new ResourceNotFoundException("Employee not found");
 
         if (employee.User is not null)
             throw new DomainException("Employee already has credentials.");
+
+        if (request.Password != request.ConfirmPassword)
+            throw new ConflictException("Passwords do not match.");
 
         var passwordHash = passwordHasher.Hash(request.Password);
 

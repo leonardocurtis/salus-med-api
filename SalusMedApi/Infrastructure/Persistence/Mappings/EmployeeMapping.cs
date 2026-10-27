@@ -13,12 +13,7 @@ public class EmployeeMapping : AuditableEntityMapping<Employee>
 
         builder.ToTable("employees");
 
-        builder
-            .Property(e => e.EmployeeNumber)
-            .IsRequired()
-            .HasMaxLength(11)
-            .IsFixedLength()
-            .HasColumnType("char(11)");
+        builder.Property(e => e.EmployeeNumber).IsRequired().HasMaxLength(10).IsFixedLength();
         builder.Property(e => e.Name).HasMaxLength(100).IsRequired();
         builder
             .Property(e => e.PhoneNumber)
@@ -38,10 +33,10 @@ public class EmployeeMapping : AuditableEntityMapping<Employee>
             .HasMaxLength(11)
             .HasColumnName("cpf")
             .IsRequired();
-        builder.Property(e => e.Gender).HasConversion<string>().HasMaxLength(50).IsRequired();
         builder.Property(e => e.DateOfBirth).IsRequired();
         builder.Property(e => e.Status).IsRequired().HasMaxLength(50).HasConversion<string>();
         builder.Property(e => e.Occupation).IsRequired().HasMaxLength(50).HasConversion<string>();
+        builder.Property(e => e.HiredAt).IsRequired();
 
         builder
             .HasIndex(e => e.EmployeeNumber)

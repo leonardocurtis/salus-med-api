@@ -2,9 +2,8 @@ namespace SalusMedApi.Domain.Enums;
 
 public enum Gender
 {
-    None,
+    PreferNotToSay,
     Female,
     Male,
     NonBinary,
-    PreferNotToSay,
 }

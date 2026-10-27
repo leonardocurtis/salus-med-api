@@ -19,11 +19,11 @@ public class EmployeeRepository(AppDbContext context) : IEmployeeRepository
     public async Task<bool> PhoneExistsAsync(Phone phone, CancellationToken ct = default) =>
         await context.Employees.AnyAsync(x => x.PhoneNumber == phone, ct);
 
-    public async Task<Employee?> GetEmployeeByEmployeeNumberAsync(
-        string employeeId,
+    public async Task<Employee?> GetByPublicIdWithUserAsync(
+        Guid publicId,
         CancellationToken ct = default
     ) =>
         await context
             .Employees.Include(e => e.User)
-            .FirstOrDefaultAsync(x => x.EmployeeNumber == employeeId, ct);
+            .FirstOrDefaultAsync(x => x.PublicId == publicId, ct);
 }

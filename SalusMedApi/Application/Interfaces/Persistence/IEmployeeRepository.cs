@@ -9,8 +9,5 @@ public interface IEmployeeRepository
     Task<bool> CpfExistsAsync(Cpf cpf, CancellationToken ct = default);
     Task<bool> EmailExistsAsync(Email email, CancellationToken ct = default);
     Task<bool> PhoneExistsAsync(Phone phone, CancellationToken ct = default);
-    Task<Employee?> GetEmployeeByEmployeeNumberAsync(
-        string employeeId,
-        CancellationToken ct = default
-    );
+    Task<Employee?> GetByPublicIdWithUserAsync(Guid publicId, CancellationToken ct = default);
 }

@@ -1,3 +1,5 @@
+using System.Collections.Frozen;
+using System.Collections.Immutable;
 using SalusMedApi.Application.Exceptions;
 using SalusMedApi.Domain.Common;
 using SalusMedApi.Domain.Enums;
@@ -12,11 +14,11 @@ public class Employee : AuditableEntity
     public Phone PhoneNumber { get; private set; }
     public Email EmailAddress { get; private set; }
     public Cpf CpfNumber { get; private set; }
-    public Gender Gender { get; private set; }
     public DateOnly DateOfBirth { get; private set; }
     public EmployeeStatus Status { get; private set; }
     public Address Address { get; private set; }
     public Occupation Occupation { get; private set; }
+    public DateOnly HiredAt { get; private set; }
 
     public long? UserId { get; private set; }
     public User? User { get; private set; }
@@ -26,7 +28,10 @@ public class Employee : AuditableEntity
 
     private Employee() { }
 
-    private static readonly Dictionary<EmployeeStatus, EmployeeStatus[]> AllowedTransitions = new()
+    private static readonly FrozenDictionary<
+        EmployeeStatus,
+        ImmutableArray<EmployeeStatus>
+    > AllowedTransitions = new Dictionary<EmployeeStatus, ImmutableArray<EmployeeStatus>>
     {
         [EmployeeStatus.Active] =
         [
@@ -47,7 +52,7 @@ public class Employee : AuditableEntity
             EmployeeStatus.Terminated,
         ],
         [EmployeeStatus.Terminated] = [],
-    };
+    }.ToFrozenDictionary();
 
     public static Employee Create(
         string employeeNumber,
@@ -55,11 +60,11 @@ public class Employee : AuditableEntity
         string phone,
         string email,
         string cpf,
-        Gender gender,
         DateOnly dateOfBirth,
         Address address,
         Occupation occupation,
-        Department department
+        Department department,
+        DateOnly hiredAt
     )
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -78,22 +83,25 @@ public class Employee : AuditableEntity
             PhoneNumber = Phone.Create(phone),
             EmailAddress = Email.Create(email),
             CpfNumber = Cpf.Create(cpf),
-            Gender = gender,
             DateOfBirth = dateOfBirth,
             Status = EmployeeStatus.Active,
             Address = address,
             Occupation = occupation,
             Department = department,
             DepartmentId = department.Id,
+            HiredAt = hiredAt,
         };
     }
+
+    private bool CanTransitionTo(EmployeeStatus target) =>
+        AllowedTransitions.TryGetValue(Status, out var allowed) && allowed.Contains(target);
 
     private void ChangeStatus(EmployeeStatus newStatus)
     {
         if (Status == newStatus)
             throw new DomainException($"Employee is already in status '{newStatus}'.");
 
-        if (!AllowedTransitions[Status].Contains(newStatus))
+        if (!CanTransitionTo(newStatus))
             throw new DomainException(
                 $"Invalid status transition: cannot move from '{Status}' to '{newStatus}'."
             );
@@ -107,29 +115,67 @@ public class Employee : AuditableEntity
 
     public void PlaceOnLeave() => ChangeStatus(EmployeeStatus.OnLeave);
 
-    public void Terminate() => ChangeStatus(EmployeeStatus.Terminated);
-
-    public void UpdateAddress(Address address) => Address = address;
-
-    public void ChangeGender(Gender gender) => Gender = gender;
-
-    public void AssignDepartment(Department department) =>
-        Department = department ?? throw new DomainException("Department cannot be null.");
-
-    public void UpdateContact(string phone) => PhoneNumber = Phone.Create(phone);
-
-    public void UpdateEmail(string email) => EmailAddress = Email.Create(email);
-
-    public void UpdateName(string name)
+    public void Terminate(string deletedBy)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new DomainException("Name cannot be empty.");
+        if (UserId is not null && User is null)
+            throw new DomainException(
+                "User must be loaded to terminate an employee with credentials."
+            );
 
-        Name = name.Trim();
+        ChangeStatus(EmployeeStatus.Terminated);
+        DeletedAt = DateTimeOffset.UtcNow;
+        DeletedBy = deletedBy;
+        User?.Deactivate();
+    }
+
+    public void UpdateAddress(Address address)
+    {
+        EnsureNotTerminated();
+
+        Address = address ?? throw new DomainException("Employee address is required.");
+    }
+
+    public void AssignDepartment(Department department)
+    {
+        EnsureNotTerminated();
+
+        Department = department ?? throw new DomainException("Department cannot be null.");
+        DepartmentId = department.Id;
+    }
+
+    public void Update(string? name, string? phone, string? email)
+    {
+        EnsureNotTerminated();
+
+        string? newName = null;
+        if (name is not null)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new DomainException("Name cannot be empty.");
+            newName = name.Trim();
+        }
+
+        var newPhone = phone is not null ? Phone.Create(phone) : null;
+        var newEmail = email is not null ? Email.Create(email) : null;
+
+        if (newName is not null)
+            Name = newName;
+        if (newPhone is not null)
+            PhoneNumber = newPhone;
+        if (newEmail is not null)
+            EmailAddress = newEmail;
+    }
+
+    private void EnsureNotTerminated()
+    {
+        if (Status == EmployeeStatus.Terminated)
+            throw new ConflictException("Cannot modify a terminated employee.");
     }
 
     public void AssignCredentials(User user)
     {
+        EnsureNotTerminated();
+
         if (User is not null)
             throw new DomainException("Employee already has credentials.");
 
