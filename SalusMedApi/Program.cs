@@ -25,6 +25,7 @@ builder
     .AddExceptionHandler<ValidationExceptionHandler>() // Exception
     .AddExceptionHandler<GlobalExceptionHandler>() // Exception handlers
     .AddProblemDetails() // ProblemDetails
+    .AddApiRateLimiting() // Rate Limiting
     .AddSwaggerGen(opt =>
     {
         opt.SwaggerDoc("v1", new OpenApiInfo { Title = "Salus Med Api", Version = "v1" });
@@ -49,6 +50,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
