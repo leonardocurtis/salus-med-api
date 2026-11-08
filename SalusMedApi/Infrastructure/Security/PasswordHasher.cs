@@ -1,12 +1,21 @@
+using Isopoh.Cryptography.Argon2;
 using SalusMedApi.Application.Interfaces.Security;
 
 namespace SalusMedApi.Infrastructure.Security;
 
-public class PasswordHasher : IPasswordHasher
+public sealed class PasswordHasher : IPasswordHasher
 {
-    private const int WorkFactor = 12;
+    private const int TimeCost = 3;
+    private const int MemoryCostKiB = 65536;
+    private const int Parallelism = 1;
+    private readonly Lazy<string> _dummyHash;
+    public string DummyHash => _dummyHash.Value;
 
-    public string Hash(string password) => BCrypt.Net.BCrypt.HashPassword(password, WorkFactor);
+    public PasswordHasher() =>
+        _dummyHash = new Lazy<string>(() => Hash("dummy-password-for-timing"));
 
-    public bool Verify(string password, string hash) => BCrypt.Net.BCrypt.Verify(password, hash);
+    public string Hash(string password) =>
+        Argon2.Hash(password, TimeCost, MemoryCostKiB, Parallelism, Argon2Type.HybridAddressing);
+
+    public bool Verify(string password, string hash) => Argon2.Verify(hash, password);
 }
