@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using SalusMedApi.Application.DTOs.Physician;
 using SalusMedApi.Application.Interfaces.Auth;
 using SalusMedApi.Application.Interfaces.Persistence;
@@ -30,6 +31,7 @@ public static class DependencyInjectionExtensions
             services.AddSecurity();
             services.AddGenerators();
             services.AddCurrentUser();
+            services.AddTimeProvider();
 
             return services;
         }
@@ -51,6 +53,7 @@ public static class DependencyInjectionExtensions
 
         private void AddRepositories()
         {
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IHealthUnitRepository, HealthUnitRepository>();
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
@@ -70,7 +73,7 @@ public static class DependencyInjectionExtensions
 
         private void AddSecurity()
         {
-            services.AddScoped<IPasswordHasher, PasswordHasher>();
+            services.AddSingleton<IPasswordHasher, PasswordHasher>();
         }
 
         private void AddGenerators()
@@ -82,6 +85,11 @@ public static class DependencyInjectionExtensions
         {
             services.AddHttpContextAccessor();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
+        }
+
+        private void AddTimeProvider()
+        {
+            services.TryAddSingleton(TimeProvider.System);
         }
     }
 }
