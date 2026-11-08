@@ -13,7 +13,7 @@ public class UserMapping : AuditableEntityMapping<User>
         builder.ToTable("users");
 
         builder.Property(u => u.Username).IsRequired().HasMaxLength(20);
-        builder.Property(u => u.PasswordHash).IsRequired().HasMaxLength(60);
+        builder.Property(u => u.PasswordHash).IsRequired().HasMaxLength(255).IsUnicode(false);
         builder.Property(u => u.Status).IsRequired().HasMaxLength(50).HasConversion<string>();
         builder.Property(u => u.CreatedAt).IsRequired();
 
