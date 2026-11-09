@@ -1,6 +1,6 @@
-using SalusMedApi.Application.Exceptions;
 using SalusMedApi.Domain.Common;
 using SalusMedApi.Domain.Enums;
+using SalusMedApi.Domain.Exceptions;
 using SalusMedApi.Domain.ValueObjects;
 
 namespace SalusMedApi.Domain.Entities;

@@ -1,5 +1,5 @@
-using SalusMedApi.Application.Exceptions;
 using SalusMedApi.Domain.Common;
+using SalusMedApi.Domain.Exceptions;
 
 namespace SalusMedApi.Domain.Entities;
 

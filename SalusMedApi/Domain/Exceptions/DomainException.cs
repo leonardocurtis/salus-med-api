@@ -1,4 +1,4 @@
-namespace SalusMedApi.Application.Exceptions;
+namespace SalusMedApi.Domain.Exceptions;
 
 public class DomainException : Exception
 {

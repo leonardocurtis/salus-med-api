@@ -1,4 +1,5 @@
 using SalusMedApi.Application.Exceptions;
+using SalusMedApi.Domain.Exceptions;
 
 namespace SalusMedApi.Domain.ValueObjects;
 
