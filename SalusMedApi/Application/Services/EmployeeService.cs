@@ -27,10 +27,7 @@ public sealed class EmployeeService(
             ?? throw new ResourceNotFoundException("Employee not found");
 
         if (employee.User is not null)
-            throw new DomainException("Employee already has credentials.");
-
-        if (request.Password != request.ConfirmPassword)
-            throw new ConflictException("Passwords do not match.");
+            throw new ConflictException("Employee already has credentials.");
 
         var passwordHash = passwordHasher.Hash(request.Password);
 
