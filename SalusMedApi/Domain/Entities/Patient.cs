@@ -23,6 +23,7 @@ public class Patient : AuditableEntity
 
     private Patient() { }
 
+    // Implementar metodo de atualização de dados para falecidos
     public static Patient Create(
         string name,
         string motherName,
@@ -35,20 +36,17 @@ public class Patient : AuditableEntity
         Address address
     )
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new DomainException("Patient name is required.");
+        EnsureValidDateOfBirth(dateOfBirth);
+        EnsureValidGender(gender);
 
-        if (string.IsNullOrWhiteSpace(motherName))
-            throw new DomainException("Mother's name is required.");
-
-        if (dateOfBirth > DateOnly.FromDateTime(DateTime.UtcNow))
-            throw new DomainException("Date of birth cannot be in the future.");
+        if (address is null)
+            throw new DomainException("Patient address is required.");
 
         return new Patient
         {
-            Name = name.Trim(),
-            MotherName = motherName.Trim(),
-            FatherName = string.IsNullOrWhiteSpace(fatherName) ? null : fatherName.Trim(),
+            Name = NormalizeAndValidateName(name),
+            MotherName = NormalizeAndValidateMotherName(motherName),
+            FatherName = NormalizeAndValidateFatherName(fatherName),
             PhoneNumber = Phone.Create(phone),
             EmailAddress = Email.Create(email),
             CpfCode = Cpf.Create(cpf),
@@ -59,39 +57,53 @@ public class Patient : AuditableEntity
         };
     }
 
-    public void UpdateContact(string phone) => PhoneNumber = Phone.Create(phone);
-
-    public void UpdateEmail(string email) => EmailAddress = Email.Create(email);
-
     public void UpdateAddress(Address address)
     {
+        EnsureNotDeceased();
         Address = address ?? throw new DomainException("Address is required.");
     }
 
-    public void UpdateName(string name)
+    public void ChangeName(string name)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new DomainException("Patient name is required.");
-
-        Name = name.Trim();
+        EnsureNotDeceased();
+        Name = NormalizeAndValidateName(name);
     }
 
-    public void UpdateFatherName(string? name)
+    public void ChangeParents(string motherName, string? fatherName)
     {
-        FatherName = string.IsNullOrWhiteSpace(name) ? null : name.Trim();
+        EnsureNotDeceased();
+        var newMotherName = NormalizeAndValidateMotherName(motherName);
+        var newFatherName = NormalizeAndValidateFatherName(fatherName);
+
+        MotherName = newMotherName;
+        FatherName = newFatherName;
     }
 
-    public void UpdateGender(Gender gender) => Gender = gender;
+    public void ChangeGender(Gender gender)
+    {
+        EnsureNotDeceased();
+        EnsureValidGender(gender);
+        Gender = gender;
+    }
 
-    public void Activate()
+    public void ChangePhone(string phone)
+    {
+        EnsureNotDeceased();
+        PhoneNumber = Phone.Create(phone);
+    }
+
+    public void ChangeEmail(string email)
+    {
+        EnsureNotDeceased();
+        EmailAddress = Email.Create(email);
+    }
+
+    public void MarkAsDeceased()
     {
         if (Status == PatientStatus.Deceased)
-            throw new DomainException("Cannot change the status of a deceased patient.");
+            throw new DomainException("Patient is already deceased.");
 
-        if (Status == PatientStatus.Active)
-            throw new DomainException("Patient is already active.");
-
-        Status = PatientStatus.Active;
+        Status = PatientStatus.Deceased;
     }
 
     public void RegisterAsDeceased()
@@ -102,12 +114,49 @@ public class Patient : AuditableEntity
         Status = PatientStatus.Deceased;
     }
 
-    private void AssignCredentials(User user)
+    public void AssignCredentials(User user)
     {
-        if (User is not null)
+        EnsureNotDeceased();
+
+        if (user is null)
+            throw new DomainException("Patient must be linked to a User.");
+
+        if (UserId is not null && User is null)
             throw new DomainException("Patient already has credentials.");
 
         User = user ?? throw new DomainException("Patient must be linked to a User.");
-        UserId = user.Id;
+    }
+
+    private void EnsureNotDeceased()
+    {
+        if (Status == PatientStatus.Deceased)
+            throw new DomainException("Cannot modify a deceased patient.");
+    }
+
+    private static string NormalizeAndValidateName(string name) =>
+        string.IsNullOrWhiteSpace(name)
+            ? throw new DomainException("Patient name is required.")
+            : name.Trim();
+
+    private static string NormalizeAndValidateMotherName(string motherName) =>
+        string.IsNullOrWhiteSpace(motherName)
+            ? throw new DomainException("Mother's name is required.")
+            : motherName.Trim();
+
+    private static string? NormalizeAndValidateFatherName(string? fatherName) =>
+        string.IsNullOrWhiteSpace(fatherName) ? null : fatherName.Trim();
+
+    private static void EnsureValidGender(Gender gender)
+    {
+        if (!Enum.IsDefined(gender))
+            throw new DomainException("Invalid gender.");
+    }
+
+    private static void EnsureValidDateOfBirth(DateOnly dateOfBirth)
+    {
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        if (dateOfBirth > today)
+            throw new DomainException("Date of birth cannot be in the future.");
     }
 }

@@ -19,6 +19,9 @@ public class Department : AuditableEntity
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException("Department name is required.");
 
+        if (healthUnit is null)
+            throw new DomainException("Department must be linked to a Health Unit.");
+
         return new Department
         {
             Name = name.Trim(),

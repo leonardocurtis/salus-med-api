@@ -67,8 +67,8 @@ public class Employee : AuditableEntity
         DateOnly hiredAt
     )
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new DomainException("Employee name cannot be empty.");
+        if (string.IsNullOrWhiteSpace(employeeNumber))
+            throw new DomainException("Employee number cannot be empty.");
 
         if (address is null)
             throw new DomainException("Employee address is required.");
@@ -76,10 +76,13 @@ public class Employee : AuditableEntity
         if (department is null)
             throw new DomainException("Employee must be linked to a Department.");
 
+        EnsureValidOccupation(occupation);
+        EnsureValidDateOfBirth(dateOfBirth, hiredAt);
+
         return new Employee
         {
             EmployeeNumber = employeeNumber,
-            Name = name.Trim(),
+            Name = NormalizeAndValidateName(name),
             PhoneNumber = Phone.Create(phone),
             EmailAddress = Email.Create(email),
             CpfNumber = Cpf.Create(cpf),
@@ -93,22 +96,6 @@ public class Employee : AuditableEntity
         };
     }
 
-    private bool CanTransitionTo(EmployeeStatus target) =>
-        AllowedTransitions.TryGetValue(Status, out var allowed) && allowed.Contains(target);
-
-    private void ChangeStatus(EmployeeStatus newStatus)
-    {
-        if (Status == newStatus)
-            throw new DomainException($"Employee is already in status '{newStatus}'.");
-
-        if (!CanTransitionTo(newStatus))
-            throw new DomainException(
-                $"Invalid status transition: cannot move from '{Status}' to '{newStatus}'."
-            );
-
-        Status = newStatus;
-    }
-
     public void ReturnToActive() => ChangeStatus(EmployeeStatus.Active);
 
     public void StartVacation() => ChangeStatus(EmployeeStatus.Vacation);
@@ -117,6 +104,9 @@ public class Employee : AuditableEntity
 
     public void Terminate(string deletedBy)
     {
+        if (string.IsNullOrWhiteSpace(deletedBy))
+            throw new DomainException("DeletedBy is required to terminate an employee.");
+
         if (UserId is not null && User is null)
             throw new DomainException(
                 "User must be loaded to terminate an employee with credentials."
@@ -125,7 +115,7 @@ public class Employee : AuditableEntity
         ChangeStatus(EmployeeStatus.Terminated);
         DeletedAt = DateTimeOffset.UtcNow;
         DeletedBy = deletedBy;
-        User?.Deactivate();
+        User?.EnsureDeactivated();
     }
 
     public void UpdateAddress(Address address)
@@ -166,20 +156,60 @@ public class Employee : AuditableEntity
             EmailAddress = newEmail;
     }
 
-    private void EnsureNotTerminated()
-    {
-        if (Status == EmployeeStatus.Terminated)
-            throw new ConflictException("Cannot modify a terminated employee.");
-    }
-
     public void AssignCredentials(User user)
     {
         EnsureNotTerminated();
 
-        if (User is not null)
+        if (user is null)
+            throw new DomainException("Employee must be linked to a User.");
+
+        if (UserId is not null && User is null)
             throw new DomainException("Employee already has credentials.");
 
         User = user ?? throw new DomainException("Employee must be linked to a User.");
-        UserId = user.Id;
+    }
+
+    private bool CanTransitionTo(EmployeeStatus target) =>
+        AllowedTransitions.TryGetValue(Status, out var allowed) && allowed.Contains(target);
+
+    private void ChangeStatus(EmployeeStatus newStatus)
+    {
+        if (Status == newStatus)
+            throw new DomainException($"Employee is already in status '{newStatus}'.");
+
+        if (!CanTransitionTo(newStatus))
+            throw new DomainException(
+                $"Invalid status transition: cannot move from '{Status}' to '{newStatus}'."
+            );
+
+        Status = newStatus;
+    }
+
+    private void EnsureNotTerminated()
+    {
+        if (Status == EmployeeStatus.Terminated)
+            throw new DomainException("Cannot modify a terminated employee.");
+    }
+
+    private static string NormalizeAndValidateName(string name) =>
+        string.IsNullOrWhiteSpace(name)
+            ? throw new DomainException("Employee name is required.")
+            : name.Trim();
+
+    private static void EnsureValidOccupation(Occupation occupation)
+    {
+        if (!Enum.IsDefined(occupation))
+            throw new DomainException("Invalid employee occupation.");
+    }
+
+    private static void EnsureValidDateOfBirth(DateOnly dateOfBirth, DateOnly hiredAt)
+    {
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        if (dateOfBirth > today)
+            throw new DomainException("Employee date of birth cannot be in the future.");
+
+        if (dateOfBirth >= hiredAt)
+            throw new DomainException("Employee date of birth must be earlier than hire date.");
     }
 }

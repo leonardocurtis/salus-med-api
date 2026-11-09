@@ -13,22 +13,23 @@ public class Role : Entity
 
     private Role() { }
 
-    public static Role Create(string name, string description)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new DomainException("Role name cannot be empty.");
+    public static Role Create(string name, string description) =>
+        new()
+        {
+            Name = NormalizeAndValidateName(name),
+            Description = NormalizeAndValidateDescription(description),
+        };
 
-        if (string.IsNullOrWhiteSpace(description))
-            throw new DomainException("Role description cannot be empty.");
+    public void UpdateDescription(string description) =>
+        Description = NormalizeAndValidateDescription(description);
 
-        return new Role { Name = name.Trim(), Description = description.Trim() };
-    }
+    private static string NormalizeAndValidateName(string name) =>
+        string.IsNullOrWhiteSpace(name)
+            ? throw new DomainException("Role name cannot be empty.")
+            : name.Trim();
 
-    public void UpdateDescription(string description)
-    {
-        if (string.IsNullOrWhiteSpace(description))
-            throw new DomainException("Role description cannot be empty.");
-
-        Description = description.Trim();
-    }
+    private static string NormalizeAndValidateDescription(string description) =>
+        string.IsNullOrWhiteSpace(description)
+            ? throw new DomainException("Role description cannot be empty.")
+            : description.Trim();
 }

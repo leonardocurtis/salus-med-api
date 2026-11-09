@@ -22,6 +22,9 @@ public class User : AuditableEntity
 
     public static User Create(string username, string passwordHash)
     {
+        if (string.IsNullOrWhiteSpace(username))
+            throw new DomainException("Username cannot be empty.");
+
         if (string.IsNullOrWhiteSpace(passwordHash))
             throw new DomainException("Password hash cannot be empty.");
 
@@ -47,6 +50,12 @@ public class User : AuditableEntity
             throw new DomainException("User account is already deactivated.");
 
         Status = AccountStatus.Deactivated;
+    }
+
+    public void EnsureDeactivated()
+    {
+        if (Status != AccountStatus.Deactivated)
+            Deactivate();
     }
 
     public void ChangePassword(string newPasswordHash)

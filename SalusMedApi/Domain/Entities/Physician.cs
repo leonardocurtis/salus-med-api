@@ -31,7 +31,6 @@ public class Physician : AuditableEntity
             MedicalRegistration = Crm.Create(medicalRegistration),
             Specialty = specialty,
             Employee = employee,
-            EmployeeId = employee.Id,
         };
     }
 
