@@ -44,6 +44,6 @@ public static class PatientMapper
             postalCode: address.PostalCode,
             complement: string.IsNullOrWhiteSpace(address.Complement) ? null : address.Complement,
             city: address.City,
-            state: address.State
+            state: address.State!.Value
         );
 }

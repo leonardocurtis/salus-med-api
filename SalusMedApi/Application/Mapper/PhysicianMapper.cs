@@ -45,7 +45,8 @@ public static class PhysicianMapper
         );
 
         return Physician.Create(
-            medicalRegistration: request.Crm,
+            medicalRegistration: request.CrmNumber,
+            medicalRegistrationState: request.CrmState!.Value,
             specialty: request.Specialty!.Value,
             employee: employee
         );
@@ -59,6 +60,6 @@ public static class PhysicianMapper
             postalCode: address.PostalCode,
             complement: string.IsNullOrWhiteSpace(address.Complement) ? null : address.Complement,
             city: address.City,
-            state: address.State
+            state: address.State!.Value
         );
 }

@@ -1,3 +1,5 @@
+using SalusMedApi.Domain.Enums;
+
 namespace SalusMedApi.Application.DTOs.Address;
 
 public record AddressRequest(
@@ -7,5 +9,5 @@ public record AddressRequest(
     string Neighborhood,
     string PostalCode,
     string City,
-    string State
+    BrazilianState? State
 );

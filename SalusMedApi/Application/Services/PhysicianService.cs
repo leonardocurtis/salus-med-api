@@ -25,12 +25,10 @@ public sealed class PhysicianService(
 {
     protected override async Task ValidateProfessionalFieldsAsync(RegisterPhysicianRequest request)
     {
-        var crm = Crm.Create(request.Crm);
+        var crm = Crm.Create(request.CrmNumber, request.CrmState!.Value);
 
         if (await physicianRepository.MedicalRegistrationExistsAsync(crm))
-            throw new ConflictException(
-                $"CRM {request.Crm} is already associated with an account."
-            );
+            throw new ConflictException("CRM is already associated with an account.");
     }
 
     protected override Physician CreateEntity(
