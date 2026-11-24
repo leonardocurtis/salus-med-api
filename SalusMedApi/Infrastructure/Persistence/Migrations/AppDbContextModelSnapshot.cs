@@ -215,8 +215,8 @@ namespace SalusMedApi.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("EmailAddress")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)")
                         .HasColumnName("email");
 
                     b.Property<string>("EmployeeNumber")
@@ -243,8 +243,8 @@ namespace SalusMedApi.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
+                        .HasMaxLength(11)
+                        .HasColumnType("character varying(11)")
                         .HasColumnName("phone");
 
                     b.Property<Guid>("PublicId")
@@ -399,8 +399,8 @@ namespace SalusMedApi.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
+                        .HasMaxLength(11)
+                        .HasColumnType("character varying(11)")
                         .HasColumnName("phone");
 
                     b.Property<Guid>("PublicId")
@@ -485,13 +485,15 @@ namespace SalusMedApi.Infrastructure.Persistence.Migrations
 
                             b1.Property<string>("Number")
                                 .IsRequired()
-                                .HasColumnType("text")
+                                .HasMaxLength(9)
+                                .HasColumnType("character varying(9)")
                                 .HasColumnName("technical_manager_crm");
 
                             b1.Property<string>("State")
                                 .IsRequired()
-                                .HasColumnType("text")
-                                .HasColumnName("technical_manager_state");
+                                .HasMaxLength(2)
+                                .HasColumnType("character varying(2)")
+                                .HasColumnName("technical_manager_crm_state");
                         });
 
                     b.HasKey("Id")
@@ -556,8 +558,8 @@ namespace SalusMedApi.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("EmailAddress")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)")
                         .HasColumnName("email");
 
                     b.Property<string>("FatherName")
@@ -585,8 +587,8 @@ namespace SalusMedApi.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
+                        .HasMaxLength(11)
+                        .HasColumnType("character varying(11)")
                         .HasColumnName("phone");
 
                     b.Property<Guid>("PublicId")
@@ -742,8 +744,8 @@ namespace SalusMedApi.Infrastructure.Persistence.Migrations
 
                             b1.Property<string>("Number")
                                 .IsRequired()
-                                .HasMaxLength(6)
-                                .HasColumnType("character varying(6)")
+                                .HasMaxLength(9)
+                                .HasColumnType("character varying(9)")
                                 .HasColumnName("crm_number");
 
                             b1.Property<string>("State")
