@@ -1,4 +1,3 @@
-using SalusMedApi.Application.Exceptions;
 using SalusMedApi.Domain.Exceptions;
 
 namespace SalusMedApi.Domain.ValueObjects;
@@ -9,30 +8,10 @@ public sealed record Phone
 
     private Phone(string value) => Value = value;
 
-    public static Phone Create(string phone)
-    {
-        if (string.IsNullOrWhiteSpace(phone))
-            throw new DomainException("Phone cannot be empty.");
+    public static bool IsValid(string? phone) => GetError(phone) is null;
 
-        var digits = new string(phone.Where(char.IsDigit).ToArray());
-
-        if (digits.Length is not (10 or 11))
-            throw new DomainException(
-                "Phone must have 10 digits (landline) or 11 digits (mobile), including DDD."
-            );
-
-        var firstDigitAfterDdd = digits[2];
-
-        if (digits.Length == 11 && firstDigitAfterDdd != '9')
-            throw new DomainException("Mobile phone numbers must start with '9' after the DDD.");
-
-        if (digits.Length == 10 && firstDigitAfterDdd == '9')
-            throw new DomainException(
-                "A 10-digit phone number cannot start with '9' after the DDD."
-            );
-
-        return new Phone(digits);
-    }
+    public static Phone Create(string phone) =>
+        GetError(phone) is { } error ? throw new DomainException(error) : new Phone(phone);
 
     public string Ddd => Value[..2];
 
@@ -42,4 +21,29 @@ public sealed record Phone
         IsMobile ? $"({Ddd}) {Value[2..7]}-{Value[7..]}" : $"({Ddd}) {Value[2..6]}-{Value[6..]}";
 
     public override string ToString() => Value;
+
+    private static string? GetError(string? phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone))
+            return "Phone cannot be empty.";
+
+        if (!phone.All(char.IsAsciiDigit))
+            return "Phone must contain only digits (no mask or symbols).";
+
+        if (phone.Length is not (10 or 11))
+            return "Phone must have 10 digits (landline) or 11 digits (mobile), including DDD.";
+
+        if (phone[0] == '0' || phone[1] == '0')
+            return "Phone DDD is invalid.";
+
+        var isMobile = phone.Length == 11;
+
+        if (isMobile && phone[2] != '9')
+            return "Mobile phone numbers must start with '9' after the DDD.";
+
+        if (!isMobile && phone[2] is not (>= '2' and <= '5'))
+            return "Landline numbers must start with 2, 3, 4 or 5 after the DDD.";
+
+        return null;
+    }
 }

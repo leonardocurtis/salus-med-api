@@ -1,5 +1,3 @@
-using System.Text.RegularExpressions;
-using SalusMedApi.Application.Exceptions;
 using SalusMedApi.Domain.Exceptions;
 
 namespace SalusMedApi.Domain.ValueObjects;
@@ -10,44 +8,40 @@ public sealed record Cnpj
 
     private Cnpj(string value) => Value = value;
 
-    public static Cnpj Create(string cnpj)
-    {
-        var digits = Regex.Replace(cnpj ?? string.Empty, @"[^\d]", "");
+    public static bool IsValid(string? cnpj) =>
+        cnpj is { Length: 14 }
+        && cnpj[..12].All(IsDigitOrUpperLetter)
+        && cnpj[12..].All(char.IsAsciiDigit)
+        && cnpj.Distinct().Count() > 1
+        && HasValidCheckDigits(cnpj);
 
-        if (!IsValid(digits))
-            throw new DomainException($"'{cnpj}' is not a valid CNPJ.");
-
-        return new Cnpj(digits);
-    }
-
-    private static bool IsValid(string digits)
-    {
-        if (digits.Length != 14)
-            return false;
-
-        if (digits.Distinct().Count() == 1)
-            return false;
-
-        return ValidateDigit(digits, 12) && ValidateDigit(digits, 13);
-    }
-
-    private static bool ValidateDigit(string digits, int position)
-    {
-        int[] weights =
-            position == 12
-                ? [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
-                : [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
-
-        var sum = digits.Take(position).Select((ch, i) => (ch - '0') * weights[i]).Sum();
-
-        var remainder = sum % 11;
-        var expected = remainder < 2 ? 0 : 11 - remainder;
-
-        return (digits[position] - '0') == expected;
-    }
+    public static Cnpj Create(string cnpj) =>
+        IsValid(cnpj) ? new Cnpj(cnpj) : throw new DomainException("CNPJ is invalid.");
 
     public string Formatted =>
         $"{Value[..2]}.{Value[2..5]}.{Value[5..8]}/{Value[8..12]}-{Value[12..]}";
 
     public override string ToString() => Value;
+
+    private static bool IsDigitOrUpperLetter(char c) =>
+        char.IsAsciiDigit(c) || char.IsAsciiLetterUpper(c);
+
+    private static bool HasValidCheckDigits(string cnpj) =>
+        CalculateCheckDigit(cnpj[..12]) == cnpj[12] - '0'
+        && CalculateCheckDigit(cnpj[..13]) == cnpj[13] - '0';
+
+    private static int CalculateCheckDigit(string baseChars)
+    {
+        var sum = 0;
+        var weight = 2;
+
+        for (var i = baseChars.Length - 1; i >= 0; i--)
+        {
+            sum += (baseChars[i] - '0') * weight;
+            weight = weight == 9 ? 2 : weight + 1;
+        }
+
+        var remainder = sum % 11;
+        return remainder < 2 ? 0 : 11 - remainder;
+    }
 }
