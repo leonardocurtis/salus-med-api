@@ -1,4 +1,3 @@
-using SalusMedApi.Application.Exceptions;
 using SalusMedApi.Domain.Enums;
 using SalusMedApi.Domain.Exceptions;
 
@@ -6,6 +5,9 @@ namespace SalusMedApi.Domain.ValueObjects;
 
 public sealed record Crm
 {
+    public const int MinNumberLength = 4;
+    public const int MaxNumberLength = 9;
+
     public string Number { get; }
     public BrazilianState State { get; }
 
@@ -15,25 +17,21 @@ public sealed record Crm
         State = state;
     }
 
-    public static Crm Create(string rawValue)
+    public static bool IsValidNumber(string? number) =>
+        number is { Length: >= MinNumberLength and <= MaxNumberLength }
+        && number.All(char.IsAsciiDigit);
+
+    public static Crm Create(string number, BrazilianState state)
     {
-        if (string.IsNullOrWhiteSpace(rawValue))
-            throw new DomainException("Medical registration cannot be empty.");
+        if (!IsValidNumber(number))
+            throw new DomainException(
+                $"CRM number must contain {MinNumberLength} to {MaxNumberLength} digits."
+            );
 
-        var parts = rawValue.Trim().ToUpperInvariant().Split('/');
+        if (!Enum.IsDefined(state))
+            throw new DomainException("CRM state (UF) is invalid.");
 
-        if (parts.Length != 2)
-            throw new DomainException("CRM must follow the 'number/UF' format (e.g. 123456/RS).");
-
-        var (numberPart, statePart) = (parts[0], parts[1]);
-
-        if (numberPart.Length == 0 || !numberPart.All(char.IsDigit))
-            throw new DomainException("CRM number must contain only digits.");
-
-        if (!Enum.TryParse<BrazilianState>(statePart, out var state))
-            throw new DomainException($"'{statePart}' is not a valid Brazilian state.");
-
-        return new Crm(numberPart, state);
+        return new Crm(number, state);
     }
 
     public string Formatted => $"{Number}/{State}";
