@@ -33,18 +33,25 @@ public class HealthUnitMapping : AuditableEntityMapping<HealthUnit>
             h => h.TechnicalManagerCouncilNumber,
             registration =>
             {
-                registration.Property(r => r.Number).HasColumnName("technical_manager_crm");
+                registration
+                    .Property(r => r.Number)
+                    .HasColumnName("technical_manager_crm")
+                    .HasMaxLength(Crm.MaxNumberLength)
+                    .IsRequired();
+
                 registration
                     .Property(r => r.State)
                     .HasConversion<string>()
-                    .HasColumnName("technical_manager_state");
+                    .HasColumnName("technical_manager_crm_state")
+                    .HasMaxLength(2)
+                    .IsRequired();
             }
         );
         builder
             .Property(h => h.PhoneNumber)
             .HasConversion(new PhoneConverter())
             .IsRequired()
-            .HasMaxLength(20)
+            .HasMaxLength(11)
             .HasColumnName("phone");
         builder.Property(h => h.Status).IsRequired().HasMaxLength(50).HasConversion<string>();
 

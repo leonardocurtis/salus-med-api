@@ -20,7 +20,7 @@ public class PatientMapping : AuditableEntityMapping<Patient>
         builder
             .Property(p => p.PhoneNumber)
             .HasConversion(new PhoneConverter())
-            .HasMaxLength(20)
+            .HasMaxLength(11)
             .HasColumnName("phone")
             .IsRequired();
         builder
@@ -28,7 +28,7 @@ public class PatientMapping : AuditableEntityMapping<Patient>
             .HasConversion(new EmailConverter())
             .IsRequired()
             .HasColumnName("email")
-            .HasMaxLength(100);
+            .HasMaxLength(Email.MaxLength);
         builder
             .Property(p => p.CpfCode)
             .HasConversion(new CpfConverter())

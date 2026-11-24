@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SalusMedApi.Domain.Entities;
+using SalusMedApi.Domain.ValueObjects;
 using SalusMedApi.Infrastructure.Persistence.Converters;
 
 namespace SalusMedApi.Infrastructure.Persistence.Mappings;
@@ -18,7 +19,7 @@ public class EmployeeMapping : AuditableEntityMapping<Employee>
         builder
             .Property(e => e.PhoneNumber)
             .HasConversion(new PhoneConverter())
-            .HasMaxLength(20)
+            .HasMaxLength(11)
             .HasColumnName("phone")
             .IsRequired();
         builder
@@ -26,7 +27,7 @@ public class EmployeeMapping : AuditableEntityMapping<Employee>
             .HasConversion(new EmailConverter())
             .IsRequired()
             .HasColumnName("email")
-            .HasMaxLength(100);
+            .HasMaxLength(Email.MaxLength);
         builder
             .Property(e => e.CpfNumber)
             .HasConversion(new CpfConverter())
@@ -42,7 +43,6 @@ public class EmployeeMapping : AuditableEntityMapping<Employee>
             .HasIndex(e => e.EmployeeNumber)
             .IsUnique()
             .HasDatabaseName("ix_employees_employee_number");
-        builder.HasIndex(e => e.EmployeeNumber).IsUnique();
         builder.HasIndex(e => e.PhoneNumber).IsUnique();
         builder.HasIndex(e => e.EmailAddress).IsUnique();
         builder.HasIndex(e => e.CpfNumber).IsUnique();

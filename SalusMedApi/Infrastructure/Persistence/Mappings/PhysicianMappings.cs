@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SalusMedApi.Domain.Entities;
+using SalusMedApi.Domain.ValueObjects;
 
 namespace SalusMedApi.Infrastructure.Persistence.Mappings;
 
@@ -12,13 +13,15 @@ public class PhysicianMappings : AuditableEntityMapping<Physician>
 
         builder.ToTable("physicians");
 
+        // Unique index (crm_number, crm_state) is created manually in the migration
+        // AddPhysicianCrmUniqueIndex: EF Core 10 can't index complex type members.
         builder.ComplexProperty(
             p => p.MedicalRegistration,
             crm =>
             {
                 crm.Property(c => c.Number)
                     .HasColumnName("crm_number")
-                    .HasMaxLength(6)
+                    .HasMaxLength(Crm.MaxNumberLength)
                     .IsRequired();
 
                 crm.Property(c => c.State)
