@@ -163,10 +163,10 @@ public class Employee : AuditableEntity
         if (user is null)
             throw new DomainException("Employee must be linked to a User.");
 
-        if (UserId is not null && User is null)
+        if (UserId is not null || User is not null)
             throw new DomainException("Employee already has credentials.");
 
-        User = user ?? throw new DomainException("Employee must be linked to a User.");
+        User = user;
     }
 
     private bool CanTransitionTo(EmployeeStatus target) =>

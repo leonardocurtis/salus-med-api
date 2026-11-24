@@ -17,6 +17,7 @@ public class Physician : AuditableEntity
 
     public static Physician Create(
         string medicalRegistration,
+        BrazilianState medicalRegistrationState,
         Specialty specialty,
         Employee employee
     )
@@ -28,14 +29,16 @@ public class Physician : AuditableEntity
 
         return new Physician
         {
-            MedicalRegistration = Crm.Create(medicalRegistration),
+            MedicalRegistration = Crm.Create(medicalRegistration, medicalRegistrationState),
             Specialty = specialty,
             Employee = employee,
         };
     }
 
-    public void UpdateRegistration(string medicalRegistration) =>
-        MedicalRegistration = Crm.Create(medicalRegistration);
+    public void UpdateRegistration(
+        string medicalRegistration,
+        BrazilianState medicalRegistrationState
+    ) => MedicalRegistration = Crm.Create(medicalRegistration, medicalRegistrationState);
 
     public void UpdateSpecialty(Specialty specialty)
     {

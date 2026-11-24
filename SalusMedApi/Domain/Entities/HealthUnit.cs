@@ -37,6 +37,7 @@ public class HealthUnit : AuditableEntity
         string cnpj,
         string managerName,
         string managerNumber,
+        BrazilianState managerNumberState,
         Address address,
         string phone
     )
@@ -51,7 +52,7 @@ public class HealthUnit : AuditableEntity
             CnesCode = cnesVo,
             CnpjCode = Cnpj.Create(cnpj),
             TechnicalManager = managerName.Trim(),
-            TechnicalManagerCouncilNumber = Crm.Create(managerNumber),
+            TechnicalManagerCouncilNumber = Crm.Create(managerNumber, managerNumberState),
             Address = address,
             PhoneNumber = Phone.Create(phone),
             Status = cnesVo is null
